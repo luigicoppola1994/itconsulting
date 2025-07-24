@@ -1,0 +1,218 @@
+/* --- Variables --- */
+$primary: #2d3748;
+$accent: #d69e2e;
+$background: #ffffff;
+$surface: #f8f9fa;
+$text-primary: #2d3748;
+$text-secondary: #718096;
+$text-light: #a0aec0;
+$border-color: #e2e8f0;
+$shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$sidebar-width: 280px;
+
+/* --- Sidebar Container --- */
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: $sidebar-width;
+  height: 100vh;
+  background: rgba(248, 249, 250, 0.95);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  border-right: 1px solid rgba(226, 232, 240, 0.6);
+  padding-top: 5rem;
+  z-index: 1000;
+  box-shadow: 2px 0 30px rgba(0, 0, 0, 0.05);
+  transition: transform $transition-smooth;
+  transform: translateX(0);
+
+  &.sidebar-closed {
+    transform: translateX(-100%);
+  }
+}
+
+/* --- Logo nella Sidebar --- */
+.sidebar-logo {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  z-index: 1001;
+
+  .company-logo {
+    height: 32px;
+    transition: all $transition-smooth;
+  }
+}
+
+/* --- Close Button --- */
+.sidebar-close-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  border-radius: 6px;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: $text-primary;
+    border-color: $accent;
+    transform: scale(1.05);
+  }
+}
+
+/* --- Back Button --- */
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: calc(100% - 4rem);
+  margin: 0 2rem 1.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  border-radius: 6px;
+  color: $text-secondary;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: transform $transition-fast;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.8);
+    color: $text-primary;
+    border-color: $accent;
+    transform: translateY(-1px);
+    box-shadow: $shadow-subtle;
+
+    svg {
+      transform: translateX(-2px);
+    }
+  }
+}
+
+/* --- Sidebar Items --- */
+.sidebar-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 2rem;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+  cursor: pointer;
+  transition: all $transition-fast;
+  position: relative;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.3);
+  animation: slideInLeft 0.4s ease-out backwards;
+
+  &:first-child {
+    border-top: 1px solid rgba(226, 232, 240, 0.3);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -2rem;
+    width: calc(100% + 4rem);
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    opacity: 0;
+    transition: opacity $transition-fast;
+  }
+
+  &:hover {
+    &::before {
+      opacity: 1;
+    }
+
+    .item-name {
+      color: darken($text-primary, 20%);
+    }
+  }
+
+  &.active {
+    &::after {
+      content: '';
+      position: absolute;
+      right: -2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 24px;
+      background: $accent;
+    }
+
+    .item-name {
+      color: $accent;
+      font-weight: 600;
+    }
+  }
+
+  .item-content {
+    .item-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: $text-primary;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color $transition-fast;
+    }
+  }
+}
+
+/* --- Animations --- */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: 100vw;
+    background: rgba(248, 249, 250, 0.98);
+  }
+}
+
+/* --- Focus States --- */
+.sidebar-item:focus,
+.sidebar-close-btn:focus,
+.back-button:focus {
+  outline: 2px solid $accent;
+  outline-offset: 2px;
+}

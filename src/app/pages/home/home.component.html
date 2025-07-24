@@ -1,0 +1,125 @@
+<div class="homepage-container">
+  <div class="animated-bg">
+    <div class="gradient-layer"></div>
+    </div>
+
+  <div class="main-grid-layout">
+    <div class="left-panel">
+      <div class="logo-container">
+        <img src="assets/itconsulting-sito-web-logo.png" alt="IT Consulting Logo" class="company-logo">
+      </div>
+
+      <div class="welcome-section">
+        <h1 class="welcome-title">Benvenuti<br>sul nostro sito<br>intelligente AI</h1>
+        <div class="prompt-text">
+          <p>Scegli da quale area iniziare</p>
+          <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="avatars-grid-wrapper">
+        <div class="top-avatar">
+          <div class="avatar-wrapper" [style.animation-delay]="'0s'">
+            <div class="avatar-item"
+                 (click)="onAvatarClick(avatars[0])"
+                 role="button"
+                 tabindex="0"
+                 [attr.aria-label]="'Accedi a ' + avatars[0].name">
+              <div class="avatar-glow"></div>
+              <div class="avatar-border">
+                <img [src]="avatars[0].image" [alt]="avatars[0].name" class="avatar-image-fill">
+              </div>
+              <p class="avatar-name">{{ avatars[0].name }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-grid">
+          <div class="avatar-wrapper position-vale" [style.animation-delay]="'0.1s'">
+            <div class="avatar-item"
+                 (click)="onAvatarClick(avatars[1])"
+                 role="button"
+                 tabindex="0"
+                 [attr.aria-label]="'Accedi a ' + avatars[1].name">
+              <div class="avatar-glow"></div>
+              <div class="avatar-border">
+                <img [src]="avatars[1].image" [alt]="avatars[1].name" class="avatar-image-fill">
+              </div>
+              <p class="avatar-name">{{ avatars[1].name }}</p>
+            </div>
+          </div>
+
+          <div class="avatar-wrapper position-contatti" [style.animation-delay]="'0.2s'">
+            <div class="avatar-item"
+                 (click)="onAvatarClick(avatars[2])"
+                 role="button"
+                 tabindex="0"
+                 [attr.aria-label]="'Accedi a ' + avatars[2].name">
+              <div class="avatar-glow"></div>
+              <div class="avatar-border">
+                <img [src]="avatars[2].image" [alt]="avatars[2].name" class="avatar-image-fill">
+              </div>
+              <p class="avatar-name">{{ avatars[2].name }}</p>
+            </div>
+          </div>
+
+          <div class="avatar-wrapper position-prodotti" [style.animation-delay]="'0.3s'">
+            <div class="avatar-item"
+                 (click)="onAvatarClick(avatars[3])"
+                 role="button"
+                 tabindex="0"
+                 [attr.aria-label]="'Accedi a ' + avatars[3].name">
+              <div class="avatar-glow"></div>
+              <div class="avatar-border">
+                <img [src]="avatars[3].image" [alt]="avatars[3].name" class="avatar-image-fill">
+              </div>
+              <p class="avatar-name">{{ avatars[3].name }}</p>
+            </div>
+          </div>
+
+          <div class="avatar-wrapper position-consulenza" [style.animation-delay]="'0.4s'">
+            <div class="avatar-item"
+                 (click)="onAvatarClick(avatars[4])"
+                 role="button"
+                 tabindex="0"
+                 [attr.aria-label]="'Accedi a ' + avatars[4].name">
+              <div class="avatar-glow"></div>
+              <div class="avatar-border">
+                <img [src]="avatars[4].image" [alt]="avatars[4].name" class="avatar-image-fill">
+              </div>
+              <p class="avatar-name">{{ avatars[4].name }}</p>
+            </div>
+          </div>
+
+          <div class="avatar-wrapper position-formazione" [style.animation-delay]="'0.5s'">
+            <div class="avatar-item"
+                 (click)="onAvatarClick(avatars[5])"
+                 role="button"
+                 tabindex="0"
+                 [attr.aria-label]="'Accedi a ' + avatars[5].name">
+              <div class="avatar-glow"></div>
+              <div class="avatar-border">
+                <img [src]="avatars[5].image" [alt]="avatars[5].name" class="avatar-image-fill">
+              </div>
+              <p class="avatar-name">{{ avatars[5].name }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="voice-control-bar">
+        <div class="agent-name">VALE</div>
+        <div class="microphone-button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
+          </svg>
+        </div>
+        <div class="instructions-text">STA PARLANDO</div>
+        </div>
+    </div>
+  </div>
+</div>

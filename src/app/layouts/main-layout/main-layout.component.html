@@ -1,0 +1,28 @@
+<div class="main-layout" 
+     [class.sidebar-layout]="showSidebar" 
+     [class.sidebar-closed]="sidebarClosed">
+
+  
+
+  <!-- Sidebar Reopen Tab -->
+  <button *ngIf="showSidebar && sidebarClosed" 
+          class="sidebar-reopen-tab" 
+          (click)="onToggleSidebar()"
+          aria-label="Riapri sidebar">
+    <span>SIDEBAR</span>
+  </button>
+
+  <!-- Sidebar Component -->
+  <app-sidebar *ngIf="showSidebar"
+               [isOpen]="!sidebarClosed"
+               [selectedItem]="selectedMenuItem"
+               (closeSidebar)="onCloseSidebar()"
+               (backToHome)="onBackToHome()"
+               (toggleSidebar)="onToggleSidebar()">
+  </app-sidebar>
+
+  <!-- Content Area -->
+  <main class="content-area" [class.with-sidebar]="showSidebar && !sidebarClosed">
+    <router-outlet></router-outlet>
+  </main>
+</div>
