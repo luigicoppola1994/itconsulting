@@ -1,195 +1,480 @@
-/* --- Variables --- */
-$primary: #2d3748;
-$accent: #d69e2e;
-$background: #ffffff;
-$surface: #f8f9fa;
-$text-primary: #2d3748;
-$text-secondary: #718096;
-$text-light: #a0aec0;
-$border-color: #e2e8f0;
-$shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-$transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* === VARIABILI === */
+$primary: #456491;           // Blu principale
+$primary-dark: #1E293B;      // Blu scuro
+$primary-light: #64748B;     // Blu chiaro
+$primary-lighter: #94A3B8;   // Blu molto chiaro
+$bg-light: #F8FAFC;          // Grigio chiarissimo
+$surface-card: #FFFFFF;      // Bianco
+$text-dark: #1e293b;         // Testo scuro
+$text-medium: #475569;       // Testo medio
+$text-light: #E2E8F0;        // Testo chiaro
+$text-white: #ffffff;        // Bianco
+$gray-light: #F1F5F9;        // Grigio leggero
+$gray-medium: #CBD5E1;       // Grigio medio
+$gray-border: #E2E8F0;       // Grigio per bordi
+
+// Ombre moderne e sottili
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 10px 10px rgba(0, 0, 0, 0.04);
+
+// Transizioni
+$transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 $transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-bounce: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
 $sidebar-width: 280px;
 
-/* --- Sidebar Container --- */
+/* === SIDEBAR CONTAINER === */
 .sidebar-container {
   position: fixed;
   top: 0;
   left: 0;
   width: $sidebar-width;
   height: 100vh;
-  background: rgba(248, 249, 250, 0.95);
-  backdrop-filter: blur(10px) saturate(1.1);
-  -webkit-backdrop-filter: blur(10px) saturate(1.1);
-  border-right: 1px solid rgba(226, 232, 240, 0.6);
-  padding-top: 5rem;
+  background: linear-gradient(180deg, $primary 0%, $primary-dark 100%);
+  color: $text-white;
   z-index: 1000;
-  box-shadow: 2px 0 30px rgba(0, 0, 0, 0.05);
-  transition: transform $transition-smooth;
+  box-shadow: $shadow-xl;
+  transition: transform $transition-smooth, box-shadow $transition-smooth;
   transform: translateX(0);
-
-  &.sidebar-closed {
-    transform: translateX(-100%);
-  }
-}
-
-/* --- Logo nella Sidebar --- */
-.sidebar-logo {
-  position: absolute;
-  top: 1.5rem;
-  left: 2rem;
-  z-index: 1001;
-
-  .company-logo {
-    height: 32px;
-    transition: all $transition-smooth;
-  }
-}
-
-/* --- Close Button --- */
-.sidebar-close-btn {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(226, 232, 240, 0.6);
-  border-radius: 6px;
-  color: $text-secondary;
-  cursor: pointer;
-  transition: all $transition-fast;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.95);
-    color: $text-primary;
-    border-color: $accent;
-    transform: scale(1.05);
-  }
-}
-
-/* --- Back Button --- */
-.back-button {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: calc(100% - 4rem);
-  margin: 0 2rem 1.5rem;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(226, 232, 240, 0.4);
-  border-radius: 6px;
-  color: $text-secondary;
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all $transition-fast;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  svg {
-    width: 16px;
-    height: 16px;
-    transition: transform $transition-fast;
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.8);
-    color: $text-primary;
-    border-color: $accent;
-    transform: translateY(-1px);
-    box-shadow: $shadow-subtle;
-
-    svg {
-      transform: translateX(-2px);
-    }
-  }
-}
-
-/* --- Sidebar Items --- */
-.sidebar-items {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  padding: 0 2rem;
-}
+  overflow: hidden;
 
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  padding: 1rem 0;
-  cursor: pointer;
-  transition: all $transition-fast;
-  position: relative;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.3);
-  animation: slideInLeft 0.4s ease-out backwards;
-
-  &:first-child {
-    border-top: 1px solid rgba(226, 232, 240, 0.3);
-  }
-
+  // Pattern sottile di sfondo
   &::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -2rem;
-    width: calc(100% + 4rem);
-    height: 100%;
-    background: rgba(255, 255, 255, 0.6);
-    opacity: 0;
-    transition: opacity $transition-fast;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 0;
   }
+
+  &.sidebar-closed {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+}
+
+/* === HEADER === */
+.sidebar-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  display: block;
+  text-decoration: none;
+  transition: transform $transition-fast;
 
   &:hover {
-    &::before {
-      opacity: 1;
-    }
-
-    .item-name {
-      color: darken($text-primary, 20%);
-    }
+    transform: scale(1.05);
   }
 
-  &.active {
-    &::after {
-      content: '';
-      position: absolute;
-      right: -2rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 4px;
-      height: 24px;
-      background: $accent;
-    }
+  .company-logo {
+    height: 32px;
+    width: auto;
+    // Rende il logo bianco usando filtri CSS
+    filter: brightness(0) invert(1);
+    transition: all $transition-fast;
 
-    .item-name {
-      color: $accent;
-      font-weight: 600;
-    }
-  }
-
-  .item-content {
-    .item-name {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: $text-primary;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      transition: color $transition-fast;
+    &:hover {
+      filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
     }
   }
 }
 
-/* --- Animations --- */
+.sidebar-close-btn {
+  background: none;
+  border: none;
+  color: $text-white;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all $transition-fast;
+  opacity: 0.8;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    opacity: 1;
+    transform: rotate(90deg) scale(1.05);
+  }
+
+  &:active {
+    transform: rotate(90deg) scale(0.95);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: inherit;
+  }
+}
+
+/* === DIVIDER === */
+.sidebar-divider {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.2) 20%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0.2) 80%, 
+    transparent 100%);
+  margin: 0 1.5rem;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+/* === BACK BUTTON === */
+.back-button {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: calc(100% - 3rem);
+  margin: 0.75rem 1.5rem 1rem;
+  padding: 0.625rem 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: $text-light;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm;
+
+    .back-button-icon {
+      transform: translateX(-3px) scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .back-button-text {
+      color: $text-white;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.back-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  transition: all $transition-fast;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: $text-white;
+  }
+}
+
+.back-button-text {
+  transition: color $transition-fast;
+}
+
+/* === NAVIGATION === */
+.sidebar-nav {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; // Importante per il flex shrinking
+  
+  // Rimuovi overflow per eliminare scroll
+  overflow: visible;
+}
+
+.sidebar-items {
+  padding: 0 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.25rem; // Riduci lo spazio tra gli elementi
+}
+
+/* === SIDEBAR ITEMS === */
+.sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.625rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all $transition-fast;
+  opacity: 0;
+  animation: slideInLeft 0.6s ease-out forwards;
+  overflow: hidden;
+  flex-shrink: 0; // Impedisce che gli elementi si restringano
+
+  // Hover overlay
+  .item-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.08);
+    opacity: 0;
+    transition: opacity $transition-fast;
+    border-radius: inherit;
+  }
+
+  &:hover {
+    transform: translateX(3px);
+
+    .item-hover-overlay {
+      opacity: 1;
+    }
+
+    .item-avatar .avatar-circle {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+      box-shadow: $shadow-sm;
+    }
+
+    .item-name {
+      color: $text-white;
+      transform: translateX(2px);
+    }
+
+    .item-indicator {
+      width: 16px;
+      opacity: 1;
+    }
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .item-hover-overlay {
+      opacity: 0;
+    }
+
+    .item-avatar .avatar-circle {
+      background: rgba(255, 255, 255, 0.25);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: $shadow-sm;
+    }
+
+    .item-name {
+      color: $text-white;
+      font-weight: 700;
+    }
+
+    .item-indicator {
+      width: 18px;
+      opacity: 1;
+      background: $text-white;
+    }
+  }
+}
+
+/* === AVATAR === */
+.item-avatar {
+  position: relative;
+  z-index: 1;
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+  overflow: hidden; // Per contenere l'immagine
+
+  // Immagine avatar - STILE AGGIORNATO
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: all $transition-fast;
+    border: none; // Rimuove eventuali bordi predefiniti
+  }
+
+  // Icona SVG di fallback
+  svg {
+    width: 16px;
+    height: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    transition: color $transition-fast;
+  }
+}
+
+/* === ITEM CONTENT === */
+.item-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.item-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.025em;
+  transition: all $transition-fast;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-indicator {
+  width: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 1px;
+  transition: all $transition-fast;
+  opacity: 0;
+}
+
+/* === SOCIAL LINKS === */
+.sidebar-social {
+  position: relative;
+  z-index: 2;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.social-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all $transition-fast;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    transform: translateY(-2px) scale(1.05);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: $text-white;
+    box-shadow: $shadow-sm;
+  }
+
+  &:active {
+    transform: translateY(0) scale(1);
+  }
+
+  // Hover specifici per colore brand (opzionali)
+  &.instagram:hover {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(225, 48, 108, 0.3);
+  }
+
+  &.facebook:hover {
+    background: #1877f2;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3);
+  }
+
+  &.linkedin:hover {
+    background: #0077b5;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(0, 119, 181, 0.3);
+  }
+
+  svg {
+    transition: all $transition-fast;
+  }
+}
+
+/* === FOOTER === */
+.sidebar-footer {
+  position: relative;
+  z-index: 2;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.footer-pattern {
+  height: 100%;
+  background-image: 
+    linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.02) 50%, transparent 60%),
+    linear-gradient(-45deg, transparent 40%, rgba(255, 255, 255, 0.02) 50%, transparent 60%);
+  background-size: 20px 20px;
+}
+
+/* === ANIMAZIONI === */
 @keyframes slideInLeft {
   from {
     opacity: 0;
@@ -201,18 +486,411 @@ $sidebar-width: 280px;
   }
 }
 
-/* --- Responsive Design --- */
-@media (max-width: 768px) {
-  .sidebar-container {
-    width: 100vw;
-    background: rgba(248, 249, 250, 0.98);
-  }
-}
-
-/* --- Focus States --- */
+/* === FOCUS STATES === */
 .sidebar-item:focus,
 .sidebar-close-btn:focus,
 .back-button:focus {
-  outline: 2px solid $accent;
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+  transform: translateX(2px);
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: 100vw;
+    height: auto;
+    min-height: unset;
+    box-shadow: $shadow-lg;
+
+    &.sidebar-closed {
+      transform: translateY(-100%);
+      box-shadow: none;
+    }
+  }
+
+  .sidebar-header {
+    padding: 1.25rem 1rem 1rem;
+  }
+
+  .sidebar-logo .company-logo {
+    height: 28px;
+  }
+
+  .sidebar-close-btn {
+    width: 28px;
+    height: 28px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .back-button {
+    width: calc(100% - 2rem);
+    margin: 1rem 1rem 1.5rem;
+    font-size: 0.7rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .sidebar-items {
+    padding: 0 1rem;
+    gap: 0.2rem;
+  }
+
+  .sidebar-item {
+    padding: 0.4rem 0.5rem;
+    gap: 0.6rem;
+
+    .avatar-circle {
+      width: 28px;
+      height: 28px;
+
+      .avatar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    .item-name {
+      font-size: 0.75rem;
+    }
+  }
+
+  .sidebar-social {
+    padding: 0.75rem 1rem;
+  }
+
+  .social-title {
+    font-size: 0.65rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .social-links {
+    gap: 0.75rem;
+  }
+
+  .social-link {
+    width: 32px;
+    height: 32px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar-header {
+    padding: 1rem 0.875rem 0.875rem;
+  }
+
+  .sidebar-logo .company-logo {
+    height: 26px;
+  }
+
+  .back-button {
+    font-size: 0.65rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .sidebar-item {
+    padding: 0.35rem 0.4rem;
+
+    .avatar-circle {
+      width: 26px;
+      height: 26px;
+
+      .avatar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
+
+    .item-name {
+      font-size: 0.7rem;
+    }
+  }
+
+  .sidebar-social {
+    padding: 0.5rem 0.875rem;
+  }
+
+  .social-title {
+    font-size: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .social-links {
+    gap: 0.5rem;
+  }
+
+  .social-link {
+    width: 28px;
+    height: 28px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+
+/* === ANIMAZIONI AVATAR → SIDEBAR === */
+
+// Variabili per l'animazione
+$transition-duration: 1.2s;
+$transition-easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$sidebar-final-position: 280px;
+
+/* --- Stati per la transizione --- */
+.homepage-container {
+  &.transitioning {
+    overflow: hidden;
+    
+    // Nasconde gradualmente la home durante la transizione
+    .left-panel,
+    .voice-control-bar {
+      opacity: 0;
+      transform: translateX(-50px);
+      transition: all 0.6s ease-out;
+    }
+    
+    // Mantiene il right panel visibile durante l'animazione
+    .right-panel {
+      z-index: 1000;
+      position: relative;
+    }
+  }
+  
+  &.sidebar-mode {
+    .main-grid-layout {
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease-out 0.8s; // Nasconde dopo l'animazione
+    }
+  }
+}
+
+/* --- Avatar durante l'animazione --- */
+.avatar-item {
+  position: relative;
+  z-index: 1001;
+  
+  &.selected {
+    z-index: 1003; // Avatar selezionato sopra tutti
+  }
+  
+  &.animating {
+    position: fixed !important;
+    z-index: 1002;
+    pointer-events: none;
+    
+    .avatar-border {
+      transition: all $transition-duration $transition-easing;
+    }
+    
+    .avatar-name {
+      transition: all $transition-duration $transition-easing;
+    }
+    
+    // Animazione verso la sidebar
+    &.to-sidebar {
+      .avatar-border {
+        width: 32px !important;
+        height: 32px !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        box-shadow: none !important;
+      }
+      
+      .avatar-name {
+        font-size: 0.8rem !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+      }
+    }
+    
+    // Stati finali per ogni posizione nella sidebar
+    // Calcolo: padding sidebar (1.5rem) + metà avatar (16px) per centrare
+    $sidebar-padding: 1.5rem;
+    $avatar-half: 16px;
+    $header-height: 60px; // Approssimativo
+    $back-button-height: 40px; // Approssimativo  
+    $item-height: 40px; // Altezza di ogni item della sidebar
+    $item-gap: 8px; // Gap tra gli item
+    
+    &.sidebar-position-0 {
+      transform: translate(
+        calc(#{$sidebar-padding} + #{$avatar-half}), 
+        calc(#{$header-height} + #{$back-button-height} + 0 * (#{$item-height} + #{$item-gap}))
+      );
+    }
+    
+    &.sidebar-position-1 {
+      transform: translate(
+        calc(#{$sidebar-padding} + #{$avatar-half}), 
+        calc(#{$header-height} + #{$back-button-height} + 1 * (#{$item-height} + #{$item-gap}))
+      );
+    }
+    
+    &.sidebar-position-2 {
+      transform: translate(
+        calc(#{$sidebar-padding} + #{$avatar-half}), 
+        calc(#{$header-height} + #{$back-button-height} + 2 * (#{$item-height} + #{$item-gap}))
+      );
+    }
+    
+    &.sidebar-position-3 {
+      transform: translate(
+        calc(#{$sidebar-padding} + #{$avatar-half}), 
+        calc(#{$header-height} + #{$back-button-height} + 3 * (#{$item-height} + #{$item-gap}))
+      );
+    }
+    
+    &.sidebar-position-4 {
+      transform: translate(
+        calc(#{$sidebar-padding} + #{$avatar-half}), 
+        calc(#{$header-height} + #{$back-button-height} + 4 * (#{$item-height} + #{$item-gap}))
+      );
+    }
+    
+    &.sidebar-position-5 {
+      transform: translate(
+        calc(#{$sidebar-padding} + #{$avatar-half}), 
+        calc(#{$header-height} + #{$back-button-height} + 5 * (#{$item-height} + #{$item-gap}))
+      );
+    }
+  }
+}
+
+/* --- Overlay di transizione --- */
+.transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(180deg, #456491 0%, #1E293B 100%);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease-out;
+  
+  // Pattern sottile come nella sidebar
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+  }
+  
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* --- Sidebar che appare --- */
+.sidebar-container {
+  &.appearing {
+    transform: translateX(0) !important;
+    opacity: 0;
+    animation: sidebarFadeIn 0.4s ease-out 0.8s forwards; // Appare dopo l'animazione avatar
+    
+    // Gli avatar della sidebar sono inizialmente invisibili
+    .sidebar-item {
+      opacity: 0;
+      
+      // Appaiono uno dopo l'altro
+      &:nth-child(1) { animation: sidebarItemFadeIn 0.3s ease-out 1.0s forwards; }
+      &:nth-child(2) { animation: sidebarItemFadeIn 0.3s ease-out 1.1s forwards; }
+      &:nth-child(3) { animation: sidebarItemFadeIn 0.3s ease-out 1.2s forwards; }
+      &:nth-child(4) { animation: sidebarItemFadeIn 0.3s ease-out 1.3s forwards; }
+      &:nth-child(5) { animation: sidebarItemFadeIn 0.3s ease-out 1.4s forwards; }
+      &:nth-child(6) { animation: sidebarItemFadeIn 0.3s ease-out 1.5s forwards; }
+    }
+    
+    .sidebar-header,
+    .sidebar-divider,
+    .back-button,
+    .sidebar-social,
+    .sidebar-footer {
+      opacity: 0;
+      animation: sidebarItemFadeIn 0.4s ease-out 0.9s forwards;
+    }
+  }
+}
+
+/* --- Keyframes --- */
+@keyframes sidebarFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sidebarItemFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 992px) {
+  .avatar-item.animating {
+    &.sidebar-position-0,
+    &.sidebar-position-1,
+    &.sidebar-position-2,
+    &.sidebar-position-3,
+    &.sidebar-position-4,
+    &.sidebar-position-5 {
+      transform: translate(calc(50vw - 16px), calc(100vh + 50px)); // Movimento verso il basso su mobile
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .avatar-item.animating {
+    &.to-sidebar .avatar-border {
+      width: 28px !important;
+      height: 28px !important;
+    }
+    
+    &.to-sidebar .avatar-name {
+      font-size: 0.75rem !important;
+    }
+  }
 }

@@ -1,80 +1,40 @@
 /* --- Modern Web Design Color Palette (Revised) --- */
 // Base colors
-$primary: #334155; // Dark Slate Blue - Primary background for avatars, dark elements
-$primary-light: #64748B; // Lighter Slate Blue
-$primary-dark: #1E293B; // Darker Slate Blue
-$accent: #f59e0b; // Amber - Bright accent for highlights, buttons, glows
-$accent-light: #FCD34D; // Lighter Amber
-$accent-dark: #D97706; // Darker Amber
+$primary: #456491;
+$primary-light: #64748B;
+$primary-dark: #1E293B;
+$accent: #ffffff;
+$accent-light: #f8f9fa;
+$accent-dark: #e9ecef;
 
 // Text colors
-$text-dark: #1e293b; // Very dark text (for light backgrounds)
-$text-medium: #475569; // Medium dark text
-$text-light: #E2E8F0; // Light gray text (for dark backgrounds)
-$text-white: #ffffff; // Pure white text
+$text-dark: #1e293b;
+$text-medium: #475569;
+$text-light: #E2E8F0;
+$text-white: #ffffff;
 
 // Backgrounds & Surfaces
-$bg-light: #F8FAFC; // Very light background (for left panel)
-$bg-dark: #E0E7ED; // Slightly darker light background
-$surface-card: #FFFFFF; // Pure white for cards/elements
+$bg-light: #F8FAFC;
+$bg-dark: #E0E7ED;
+$surface-card: #FFFFFF;
 
 // Shadows
 $shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 $shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 $shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 $shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
 // Transitions
 $transition-ease: 0.3s ease-in-out;
 $transition-fast: 0.15s ease-in-out;
+$transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
-// Layout specifics
-$avatar-size-lg: 140px;
-$avatar-size-md: 120px;
-$avatar-size-sm: 100px;
+// Layout specifics - TUTTI GLI AVATAR STESSA DIMENSIONE
+$avatar-size: 100px; // Dimensione uniforme per tutti gli avatar
+$avatar-size-mobile: 80px; // Dimensione uniforme per mobile
 
-$border-color: #e2e8f0; // Used for light borders
-
-
-/* --- Mixins --- */
-@mixin card-hover-effect {
-  box-shadow: $shadow-sm;
-  transition: transform $transition-ease, box-shadow $transition-ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: $shadow-md;
-  }
-}
-
-@mixin button-base {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1.1em;
-  font-weight: 600;
-  transition: background-color $transition-fast, transform $transition-fast, box-shadow $transition-fast;
-
-  &:hover {
-    background-color: darken(#334155, 10%); // Hardcoded value for safety (darker primary)
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-@mixin input-focus-style {
-  border-color: #f59e0b; // Hardcoded value for safety (accent color)
-  box-shadow: 0 0 0 3px rgba(#f59e0b, 0.2); // Hardcoded value for safety (accent color)
-  outline: none;
-}
-
+$border-color: #e2e8f0;
 
 /* --- Global Reset --- */
 * {
@@ -88,17 +48,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: $bg-light;
-  overflow: hidden; // Prevent overall body scrollbars
+  overflow: hidden;
 }
 
-/* --- Homepage Container (Outer wrapper) --- */
+/* --- Homepage Container --- */
 .homepage-container {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100vw;
   height: 100vh;
-  background: $bg-light; // Left side background color
+  background: $bg-light;
   overflow: hidden;
   position: relative;
 
@@ -136,18 +96,13 @@ body {
                 );
     background-blend-mode: overlay;
   }
-
-  .floating-shapes {
-    display: none;
-  }
 }
 
-
-/* --- Main Grid Layout for Left and Right Panels --- */
+/* --- Main Grid Layout --- */
 .main-grid-layout {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr; 
+  grid-template-columns: 1fr 1fr;
   width: 100%;
   height: 100%;
   z-index: 1;
@@ -156,7 +111,7 @@ body {
     content: '';
     position: absolute;
     top: 0;
-    left: 50%; 
+    left: 50%;
     width: 50%;
     height: 100%;
     background-color: $primary; 
@@ -164,78 +119,135 @@ body {
   }
 }
 
-/* --- Left Panel --- */
+/* --- Left Panel CENTRATO VERTICALMENTE --- */
 .left-panel {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; // Centramento verticale perfetto
   align-items: flex-start;
-  padding: 0 5vw;
+  padding: 0 8vw; // Aumentato il padding per più respiro
   color: $text-dark;
   position: relative;
   z-index: 2;
+  height: 100vh; // Altezza piena per centrare correttamente
 
   .logo-container {
     position: absolute;
-    top: 50px;
-    left: 5vw;
+    top: 60px; // Posizionato più in alto
+    left: 8vw; // Allineato con il padding
     
     .company-logo {
-      height: 48px;
+      height: 52px; // Logo leggermente più grande
       width: auto;
-      filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.1));
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
     }
   }
 
   .welcome-section {
     text-align: left;
-    margin-top: -100px;
-    margin-left: 0;
-    margin-right: 0;
-    animation: none;
-    max-width: 100%;
+    margin: 0; // Rimosso margin-top negativo
+    max-width: 600px; // Larghezza massima per leggibilità
+    animation: fadeInUp 0.8s ease-out;
 
     .welcome-title {
       font-family: 'Inter', 'Segoe UI', sans-serif;
-      font-size: 4.2rem;
-      font-weight: 700;
+      font-size: 3.2rem; // Più grande per impatto
+      font-weight: 800; // Extra bold
       color: $text-dark;
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.04em;
+      margin-bottom: 2.5rem;
+      margin-top: 2.5rem;
+      letter-spacing: -0.03em;
       line-height: 1.1;
+      text-shadow: none !important;
+      border: none !important;
+      
+      span.highlight {
+        background: linear-gradient(135deg, $primary 0%, $primary-light 50%, $primary 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: inline-block;
+        position: relative;
+        
+        // Effetto glow sottile
+        &::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 120%;
+          height: 120%;
+          background: radial-gradient(circle, rgba($primary, 0.1) 0%, transparent 70%);
+          filter: blur(20px);
+          z-index: -1;
+        }
+      }
     }
 
     .welcome-tagline {
-      font-size: 1.3rem;
+      font-size: 1.5rem; // Più grande
       color: $text-medium;
-      line-height: 1.5;
-      margin-bottom: 2rem;
+      line-height: 1.7;
+      margin-bottom: 3.5rem;
+      text-shadow: none !important;
+      border: none !important;
+      font-weight: 400;
+      opacity: 0.9;
     }
 
     .prompt-text {
-      display: flex;
+      display: inline-flex; // Inline per dimensioni contenute
       align-items: center;
-      gap: 15px;
-      margin-top: 2.5rem;
+      gap: 16px;
+      margin-top: 2rem;
       color: $text-dark;
-      font-size: 1.15rem;
-      font-weight: 500;
+      font-size: 1.25rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: color $transition-fast;
+      transition: all $transition-smooth;
+      padding: 18px 32px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba($primary, 0.05) 0%, rgba($primary, 0.08) 100%);
+      border: 2px solid rgba($primary, 0.15);
+      position: relative;
+      overflow: hidden;
+
+      // Effetto shine on hover
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba($primary, 0.1), transparent);
+        transition: left 0.6s ease;
+      }
 
       &:hover {
-        color: $accent;
+        color: $primary;
+        background: linear-gradient(135deg, rgba($primary, 0.08) 0%, rgba($primary, 0.12) 100%);
+        border-color: rgba($primary, 0.3);
+        transform: translateX(8px);
+        box-shadow: 0 8px 25px rgba($primary, 0.15);
+
+        &::before {
+          left: 100%;
+        }
       }
 
       .arrow-icon {
-        width: 36px;
-        height: 36px;
-        color: $accent;
-        transition: transform $transition-fast, color $transition-fast;
+        width: 28px;
+        height: 28px;
+        color: $primary;
+        transition: transform $transition-smooth, color $transition-smooth;
+        flex-shrink: 0;
       }
       
       &:hover .arrow-icon {
-          transform: translateX(8px);
+        transform: translateX(8px);
+        color: $primary-dark;
       }
     }
   }
@@ -245,36 +257,61 @@ body {
 .right-panel {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; 
-  align-items: center; 
+  justify-content: space-between;
+  align-items: center;
   position: relative;
   overflow: hidden;
   z-index: 2;
 }
 
-/* --- avatars-grid-wrapper (Container for the pyramid) --- */
+/* --- PIRAMIDE PERFETTA - Container --- */
 .avatars-grid-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Mantiene la piramide centrata verticalmente nel suo spazio */
+  justify-content: center;
   width: 100%;
-  // MODIFICATO: Riduci max-width per renderla più compatta e facilitare il centraggio
-  max-width: 480px; /* RIDOTTO: Rendi la piramide più stretta */
   height: auto;
   flex-grow: 1;
-  padding-top: 20px; /* RIDOTTO: Meno padding in alto */
-  padding-bottom: 20px; /* RIDOTTO: Meno padding in basso */
-  transform: translateY(0); /* Nessun offset verticale */
+  padding: 20px;
 }
 
-/* --- Avatar Item (General Styles) --- */
+/* --- PIRAMIDE PERFETTA - Layout --- */
+.avatars-pyramid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px; // Spazio verticale tra le righe
+  
+  // Prima riga - 1 avatar centrato
+  .pyramid-row-1 {
+    display: flex;
+    justify-content: center;
+  }
+  
+  // Seconda riga - 2 avatar centrati
+  .pyramid-row-2 {
+    display: flex;
+    justify-content: center;
+    gap: 60px; // Spazio orizzontale tra gli avatar
+  }
+  
+  // Terza riga - 3 avatar centrati
+  .pyramid-row-3 {
+    display: flex;
+    justify-content: center;
+    gap: 40px; // Spazio orizzontale tra gli avatar
+  }
+}
+
+/* --- Avatar Item (Dimensioni UNIFORMI) --- */
 .avatar-item {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  transition: transform $transition-ease;
   
   &:hover {
     transform: translateY(-10px);
@@ -291,7 +328,7 @@ body {
     }
 
     .avatar-name {
-      color: $accent-light;
+      color: $accent;
       transform: translateY(-5px);
     }
   }
@@ -303,7 +340,7 @@ body {
     width: 160%;
     height: 160%;
     transform: translate(-50%, -50%);
-    background: radial-gradient(circle, rgba($accent, 0.25), transparent 70%);
+    background: radial-gradient(circle, rgba($accent, 0.4), transparent 70%);
     border-radius: 50%;
     opacity: 0;
     transition: all $transition-ease;
@@ -312,9 +349,8 @@ body {
 
   .avatar-border {
     position: relative;
-    // MODIFICATO: Riduci la dimensione degli avatar grandi
-    width: 120px; 
-    height: 120px;
+    width: $avatar-size; // STESSA DIMENSIONE PER TUTTI
+    height: $avatar-size; // STESSA DIMENSIONE PER TUTTI
     background: $primary;
     border: 3px solid $primary-light;
     border-radius: 50%;
@@ -332,112 +368,180 @@ body {
   }
 
   .avatar-name {
-    margin-top: 0.8rem; /* RIDOTTO: Spazio più piccolo tra avatar e nome */
-    font-size: 0.8rem; /* RIDOTTO: Font più piccolo */
+    margin-top: 12px;
+    font-size: 0.75rem;
     font-weight: 600;
     color: $text-white;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     transition: all $transition-fast;
+    text-align: center;
   }
 }
 
-/* --- Avatars Grid (Specific Layout for Right Panel's Avatars) --- */
-.avatars-grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  width: 100%;
-  padding: 0;
-}
-
-.top-avatar {
-  margin-bottom: 20px; /* RIDOTTO: Spazio più piccolo tra avatar top e bottom-grid */
-}
-
-.bottom-grid {
-  display: grid;
-  grid-template-areas:
-    ". vale . contatti ."
-    "prodotti . consulenza . formazione";
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: auto auto;
-  // MODIFICATO: Riduci i gap per avvicinare gli avatar
-  gap: 15px 25px; /* RIDOTTO: Gap orizzontale e verticale */
-  width: 100%;
-  
-  .position-vale { grid-area: vale; }
-  .position-contatti { grid-area: contatti; }
-  .position-prodotti { grid-area: prodotti; }
-  .position-consulenza { grid-area: consulenza; }
-  .position-formazione { grid-area: formazione; }
-
-  .avatar-item {
-    .avatar-border {
-      // MODIFICATO: Riduci ulteriormente la dimensione degli avatar del bottom-grid
-      width: 100px;
-      height: 100px;
-    }
-    .avatar-name {
-        font-size: 0.75rem; /* RIDOTTO: Font ancora più piccolo per i nomi */
-    }
-  }
-}
-
-/* --- Voice Control Bar --- */
+/* --- Voice Control Bar ULTRA PROFESSIONALE --- */
 .voice-control-bar {
-  width: 80%;
+  width: 90%;
   max-width: 650px;
   height: 90px;
-  background-color: rgba($primary-dark, 0.9);
-  backdrop-filter: blur(12px) brightness(1.1);
-  border-radius: 16px;
+  background: rgba($primary-dark, 0.08);
+  backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba($primary-dark, 0.12);
+  border-radius: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 35px;
-  margin-bottom: 40px; /* Margine dal fondo del right-panel */
-  box-shadow: $shadow-lg;
-  color: $text-white;
-  font-size: 1.2em;
-  font-weight: 500;
-  letter-spacing: 0.03em;
+  margin-bottom: 40px;
+  box-shadow: 
+    0 4px 20px rgba($primary-dark, 0.08),
+    0 2px 8px rgba($primary-dark, 0.04),
+    inset 0 1px 0 rgba($accent, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: all $transition-smooth;
+
+  // Glass morphism effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba($accent, 0.03) 0%, 
+      transparent 50%, 
+      rgba($accent, 0.03) 100%);
+    border-radius: 24px;
+  }
+
+  // Hover effect
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 30px rgba($primary-dark, 0.12),
+      0 4px 12px rgba($primary-dark, 0.08);
+    background: rgba($primary-dark, 0.1);
+  }
 
   .agent-name {
     flex-shrink: 0;
     margin-right: 20px;
     font-weight: 700;
     font-size: 1.1em;
-    color: $accent-light;
+    color: rgba($accent, 0.95);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.9;
+    z-index: 1;
+    position: relative;
   }
 
+  // MICROFONO PERFETTO
   .microphone-button {
-    background-color: $accent;
+    background: linear-gradient(135deg, $accent 0%, rgba($accent, 0.95) 100%);
+    border: none;
     border-radius: 50%;
-    width: 68px;
-    height: 68px;
+    width: 64px;
+    height: 64px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: background-color $transition-fast, transform $transition-fast, box-shadow $transition-fast;
-    box-shadow: $shadow-md;
+    transition: all $transition-smooth;
+    box-shadow: 
+      0 4px 15px rgba($accent, 0.25),
+      0 2px 6px rgba($accent, 0.15),
+      inset 0 -2px 4px rgba($primary-dark, 0.1);
+    position: relative;
+    overflow: hidden;
+
+    // Pulse animation container
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all $transition-smooth;
+    }
+
+    // Inner glow
+    &::before {
+      background: radial-gradient(circle at center, 
+        rgba($accent, 0.2) 0%, 
+        transparent 60%);
+      opacity: 0;
+    }
+
+    // Outer ring on hover
+    &::after {
+      border: 2px solid rgba($accent, 0.3);
+      width: 120%;
+      height: 120%;
+      opacity: 0;
+    }
 
     svg {
-      width: 36px;
-      height: 36px;
-      color: $text-white;
+      width: 32px;
+      height: 32px;
+      color: $primary-dark;
+      z-index: 2;
+      position: relative;
+      transition: all $transition-smooth;
+      filter: drop-shadow(0 1px 2px rgba($primary-dark, 0.2));
+      
+      // Ensure perfect centering
+      display: block;
     }
 
     &:hover {
-      background-color: $accent-dark;
       transform: scale(1.08);
-      box-shadow: $shadow-lg;
+      box-shadow: 
+        0 6px 20px rgba($accent, 0.35),
+        0 3px 8px rgba($accent, 0.25),
+        inset 0 -2px 4px rgba($primary-dark, 0.15);
+
+      &::before {
+        opacity: 1;
+      }
+
+      &::after {
+        opacity: 1;
+        width: 130%;
+        height: 130%;
+      }
+
+      svg {
+        transform: scale(1.05);
+        color: rgba($primary-dark, 0.9);
+      }
     }
 
     &:active {
-      transform: scale(0.95);
+      transform: scale(1.02);
+      box-shadow: 
+        0 3px 12px rgba($accent, 0.3),
+        0 1px 4px rgba($accent, 0.2);
+
+      svg {
+        transform: scale(0.95);
+      }
+    }
+
+    // Recording state animation
+    &.recording {
+      animation: pulse 1.5s ease-in-out infinite;
+      background: linear-gradient(135deg, #ff4458 0%, #ff6b6b 100%);
+
+      svg {
+        color: $accent;
+      }
     }
   }
 
@@ -445,84 +549,80 @@ body {
     flex-shrink: 0;
     margin-left: 20px;
     text-align: right;
-    opacity: 0.9;
     text-transform: uppercase;
-    font-size: 0.95em;
+    font-size: 0.85em;
     font-weight: 600;
-    color: $text-light;
+    color: rgba($accent, 0.8);
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+    z-index: 1;
+    position: relative;
   }
 }
 
-
-/* --- Animations --- */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
+// Animazioni
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 15px rgba(255, 68, 88, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(255, 68, 88, 0.6), 
+                0 0 0 10px rgba(255, 68, 88, 0.1);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(255, 68, 88, 0.4);
+  }
 }
 
 /* --- Responsive Design --- */
 @media (max-width: 1200px) {
-  .left-panel .welcome-section .welcome-title {
-    font-size: 3.5rem;
-  }
-  .left-panel .welcome-section .welcome-tagline {
-      font-size: 1.2rem;
-  }
-  .main-grid-layout::after {
-    width: 50%; // Match 50% right panel
-    left: 50%; // Ensure it starts exactly at 50%
-  }
-  .bottom-grid {
-    gap: 20px 30px;
-  }
-  .avatar-item .avatar-border {
-    width: $avatar-size-md;
-    height: $avatar-size-md;
-  }
-  .voice-control-bar {
-    width: 90%;
-    max-width: 600px;
-    height: 80px;
-    padding: 0 25px;
-    .microphone-button {
-      width: 60px;
-      height: 60px;
-      svg {
-        width: 30px;
-        height: 30px;
+  .left-panel {
+    padding: 0 6vw;
+    
+    .welcome-section {
+      .welcome-title {
+        font-size: 3.5rem;
+      }
+      .welcome-tagline {
+        font-size: 1.3rem;
       }
     }
-    .agent-name, .instructions-text {
-      font-size: 1em;
+  }
+  
+  .avatars-pyramid {
+    gap: 25px;
+    
+    .pyramid-row-2 {
+      gap: 50px;
+    }
+    
+    .pyramid-row-3 {
+      gap: 35px;
     }
   }
 }
 
 @media (max-width: 992px) {
   .main-grid-layout {
-    grid-template-columns: 1fr; // Stack panels vertically
+    grid-template-columns: 1fr;
     &::after {
-      clip-path: none; // No diagonal cut on smaller screens
       width: 100%;
       height: 50%;
       top: unset;
       bottom: 0;
-      background-color: $primary;
+      left: 0;
     }
-  }
-
-  .homepage-container {
-    background: $bg-light;
   }
 
   .left-panel {
@@ -531,30 +631,41 @@ body {
     text-align: center;
     background-color: $bg-light;
     color: $text-dark;
+    height: auto;
+    justify-content: flex-start;
+    
     .logo-container {
-        position: relative;
-        top: unset;
-        left: unset;
-        margin-bottom: 30px;
-        .company-logo {
-            height: 40px;
-        }
+      position: relative;
+      top: unset;
+      left: unset;
+      margin-bottom: 30px;
+      
+      .company-logo {
+        height: 44px;
+      }
     }
+    
     .welcome-section {
-        margin-top: 0;
-        .welcome-title {
-            font-size: 2.8rem;
-            color: $text-dark;
+      margin-top: 0;
+      
+      .welcome-title {
+        font-size: 3rem;
+        color: $text-dark;
+      }
+      
+      .welcome-tagline {
+        font-size: 1.2rem;
+        max-width: 100%;
+      }
+      
+      .prompt-text {
+        color: $text-dark;
+        margin: 2rem auto 0;
+        
+        .arrow-icon {
+          color: $primary;
         }
-        .welcome-tagline {
-            font-size: 1.1rem;
-        }
-        .prompt-text {
-            color: $text-dark;
-            .arrow-icon {
-                color: $accent;
-            }
-        }
+      }
     }
   }
 
@@ -562,161 +673,179 @@ body {
     padding-top: 50px;
     padding-bottom: 120px;
     background-color: $primary;
-    justify-content: flex-start; // Align content to the start (top) to make space for the absolute positioned bar
+    justify-content: flex-start;
     align-items: center;
   }
 
-  .avatars-grid-wrapper {
-    transform: translateY(0);
-    padding-bottom: 30px;
-    max-width: 500px;
+  .avatars-pyramid {
+    gap: 20px;
+    
+    .pyramid-row-2 {
+      gap: 40px;
+    }
+    
+    .pyramid-row-3 {
+      gap: 25px;
+    }
   }
 
   .avatar-item {
     .avatar-border {
-        background: $surface-card;
-        border-color: #e2e8f0; // Hardcoded $border-color for safety in mixins context
+      width: $avatar-size-mobile;
+      height: $avatar-size-mobile;
+      background: $surface-card;
+      border-color: $border-color;
     }
+    
     .avatar-name {
-        color: $text-white;
+      color: $text-white;
+      font-size: 0.7rem;
     }
   }
-  .bottom-grid {
-    grid-template-areas:
-      "vale contatti"
-      "prodotti consulenza"
-      ". formazione .";
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto auto auto;
-    gap: 15px 25px;
 
-    .position-formazione {
-        grid-column: 1 / span 2;
-        justify-self: center;
-    }
-
-    .avatar-item .avatar-border {
-      width: $avatar-size-sm;
-      height: $avatar-size-sm;
-    }
-    .avatar-name {
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-    }
-  }
   .voice-control-bar {
-    width: 90%;
-    max-width: 450px;
-    height: 70px;
-    bottom: 25px;
-    padding: 0 20px;
+    width: 85%;
+    height: 80px;
+    padding: 0 30px;
+    
     .microphone-button {
-      width: 55px;
-      height: 55px;
+      width: 56px;
+      height: 56px;
+      
       svg {
         width: 28px;
         height: 28px;
       }
     }
-    .agent-name, .instructions-text {
-      font-size: 1em;
-    }
   }
 }
 
 @media (max-width: 768px) {
-    .left-panel {
-        padding: 60px 15px 30px;
-        .welcome-title {
-            font-size: 2.4rem;
+  .left-panel {
+    padding: 60px 20px 30px;
+    
+    .welcome-section {
+      .welcome-title {
+        font-size: 2.5rem;
+      }
+      
+      .welcome-tagline {
+        font-size: 1.1rem;
+      }
+      
+      .prompt-text {
+        font-size: 1.1rem;
+        padding: 15px 25px;
+        
+        .arrow-icon {
+          width: 24px;
+          height: 24px;
         }
-        .welcome-tagline {
-            font-size: 1rem;
-        }
-        .prompt-text {
-            font-size: 1rem;
-            gap: 10px;
-            .arrow-icon {
-                width: 30px;
-                height: 30px;
-            }
-        }
+      }
     }
-    .bottom-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px 15px;
-        .avatar-item .avatar-border {
-            width: 80px;
-            height: 80px;
-        }
+  }
+  
+  .avatars-pyramid {
+    gap: 15px;
+    
+    .pyramid-row-2 {
+      gap: 30px;
     }
-    .voice-control-bar {
-        height: 60px;
-        padding: 0 15px;
-        .microphone-button {
-            width: 50px;
-            height: 50px;
-            svg {
-                width: 25px;
-                height: 25px;
-            }
-        }
-        .agent-name, .instructions-text {
-            font-size: 0.9em;
-        }
+    
+    .pyramid-row-3 {
+      gap: 20px;
     }
+  }
+  
+  .avatar-item .avatar-border {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .voice-control-bar {
+    height: 70px;
+    padding: 0 25px;
+    
+    .microphone-button {
+      width: 48px;
+      height: 48px;
+      
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    
+    .agent-name, .instructions-text {
+      font-size: 0.9em;
+    }
+  }
 }
 
 @media (max-width: 480px) {
-    .left-panel {
-        padding: 50px 10px 20px;
-        .welcome-title {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-        .welcome-tagline {
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-        .prompt-text {
-            font-size: 0.9rem;
-        }
-    }
-    .right-panel {
-        padding-top: 30px;
-        padding-bottom: 100px;
-    }
-    .avatars-grid-wrapper {
-        padding-bottom: 20px;
-        max-width: 300px;
-    }
-    .bottom-grid {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "vale"
-            "contatti"
-            "prodotti"
-            "consulenza"
-            "formazione";
-        gap: 15px;
-        .avatar-item .avatar-border {
-            width: 90px;
-            height: 90px;
-        }
-    }
-    .voice-control-bar {
-      height: 55px;
-      padding: 0 10px;
-      .microphone-button {
-        width: 40px;
-        height: 40px;
-        svg {
-          width: 20px;
-          height: 20px;
-        }
+  .left-panel {
+    padding: 50px 15px 20px;
+    
+    .welcome-section {
+      .welcome-title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
       }
-      .agent-name, .instructions-text {
-        font-size: 0.8em;
+      
+      .welcome-tagline {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+      }
+      
+      .prompt-text {
+        font-size: 1rem;
+        padding: 12px 20px;
+        gap: 12px;
       }
     }
+  }
+  
+  .right-panel {
+    padding-top: 30px;
+    padding-bottom: 100px;
+  }
+  
+  .avatars-pyramid {
+    gap: 12px;
+    
+    .pyramid-row-2 {
+      gap: 25px;
+    }
+    
+    .pyramid-row-3 {
+      gap: 15px;
+    }
+  }
+  
+  .avatar-item .avatar-border {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .voice-control-bar {
+    height: 60px;
+    padding: 0 20px;
+    width: 90%;
+    
+    .microphone-button {
+      width: 42px;
+      height: 42px;
+      
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    
+    .agent-name, .instructions-text {
+      font-size: 0.8em;
+    }
+  }
 }
+
+
