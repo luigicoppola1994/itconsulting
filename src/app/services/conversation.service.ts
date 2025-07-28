@@ -1,16 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
-// Importa i tipi corretti dall'SDK ElevenLabs
+// Importa i tipi necessari dall'SDK di ElevenLabs
 import { Conversation, SessionConfig, Callbacks, InputConfig, ClientToolsConfig, Role, Status, Mode } from '@11labs/client';
 
-// Aggiorna il tipo SessionOptions
+// Definisce le opzioni per l'avvio di una sessione di conversazione
 type SessionOptions = SessionConfig & Partial<Callbacks> & Partial<InputConfig> & {
   agentId: string;
   clientTools?: Record<string, (parameters: any) => string | number | void | Promise<string | number | void>>;
 };
 
+// Interfaccia per l'istanza della conversazione, riflette i metodi disponibili dall'SDK
 interface ConversationInstance {
   endSession(): Promise<void>;
   getId(): string;
@@ -19,40 +20,49 @@ interface ConversationInstance {
   getOutputVolume(): number;
   getInputByteFrequencyData(): Uint8Array;
   getOutputByteFrequencyData(): Uint8Array;
+  // sendText è stato rimosso da qui in quanto non è un metodo esposto direttamente dall'SDK
+  // per inviare testo arbitrario che l'agente pronuncia.
+  // La pronuncia del messaggio di trasferimento deve essere gestita dalla logica dell'agente stesso
+  // prima di chiamare il tool.
 }
 
+// Interfaccia per la configurazione di un singolo agente
 interface AgentConfig {
-  id: string;
-  name: string;
-  agentId: string;
-  description: string;
-  avatar?: string;
-  color?: string;
+  id: string; // ID interno per la gestione dell'applicazione (es. 'vale', 'contatti')
+  name: string; // Nome visualizzato dell'agente
+  agentId: string; // ID dell'agente sulla piattaforma ElevenLabs
+  description: string; // Breve descrizione dell'agente
+  avatar?: string; // Percorso dell'immagine dell'avatar
+  color?: string; // Colore associato all'agente per l'interfaccia utente
 }
 
-interface ConversationState {
-  status: 'connected' | 'connecting' | 'disconnected';
-  mode: 'speaking' | 'listening' | 'idle';
-  currentAgent: AgentConfig | null;
-  conversationId?: string;
-  lastMessage?: string;
-  error?: string;
-  inputVolume: number;
-  outputVolume: number;
-  sdkLoaded: boolean;
-  sdkLoading: boolean;
-  isAgentSpeaking: boolean;
-  isUserSpeaking: boolean;
-  visualState: 'idle' | 'connecting' | 'listening' | 'speaking' | 'processing' | 'error';
-  lastSpeaker: 'agent' | 'user' | null;
-  speakingIntensity: number;
+// Interfaccia per lo stato complessivo della conversazione
+export interface ConversationState {
+  status: 'connected' | 'connecting' | 'disconnected'; // Stato della connessione (connesso, in connessione, disconnesso)
+  mode: 'speaking' | 'listening' | 'idle'; // Modalità dell'interazione (agente parla, utente parla, inattivo)
+  currentAgent: AgentConfig | null; // L'agente attualmente attivo
+  conversationId?: string; // ID della sessione di conversazione corrente
+  lastMessage?: string; // L'ultimo messaggio scambiato
+  error?: string; // Messaggio di errore, se presente
+  inputVolume: number; // Volume dell'input del microfono
+  outputVolume: number; // Volume dell'output dell'agente
+  sdkLoaded: boolean; // Indica se l'SDK è stato caricato
+  sdkLoading: boolean; // Indica se l'SDK è in fase di caricamento
+  isAgentSpeaking: boolean; // Vero se l'agente sta parlando
+  isUserSpeaking: boolean; // Vero se l'utente sta parlando
+  visualState: 'idle' | 'connecting' | 'listening' | 'speaking' | 'processing' | 'error'; // Stato visivo per l'UI
+  lastSpeaker: 'agent' | 'user' | null; // Chi ha parlato l'ultima volta
+  speakingIntensity: number; // Intensità del parlato per effetti visivi
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConversationService {
+export class ConversationService implements OnDestroy {
+  // Istanza della conversazione ElevenLabs SDK
   private conversation: ConversationInstance | null = null;
+  
+  // Subject per lo stato della conversazione, utilizzato per notificare i componenti
   private conversationStateSubject = new BehaviorSubject<ConversationState>({
     status: 'disconnected',
     mode: 'idle',
@@ -68,7 +78,7 @@ export class ConversationService {
     speakingIntensity: 0
   });
 
-  // Mappatura degli agenti con URL
+  // Array di configurazioni degli agenti disponibili
   private agents: AgentConfig[] = [
     {
       id: 'vale',
@@ -120,312 +130,360 @@ export class ConversationService {
     }
   ];
 
+  // Observable pubblico per permettere ai componenti di sottoscriversi allo stato della conversazione
   public conversationState$: Observable<ConversationState> = this.conversationStateSubject.asObservable();
-  private volumeUpdateInterval?: number;
-  private speakingDetectionThreshold = 0.1;
+  
+  private volumeUpdateInterval?: number; // Intervallo per l'aggiornamento del volume
+  private speakingDetectionThreshold = 0.1; // Soglia per rilevare il parlato
 
+  // Costruttore del servizio, inietta il Router di Angular
   constructor(private router: Router) {
     console.log('🎤 ConversationService inizializzato');
-    this.updateState({ sdkLoaded: true });
+    this.updateState({ sdkLoaded: true }); // Imposta l'SDK come caricato all'avvio del servizio
   }
 
+  // Restituisce la configurazione di un agente tramite il suo ID interno
   getAgentById(agentId: string): AgentConfig | undefined {
     return this.agents.find(agent => agent.id === agentId);
   }
 
+  // Restituisce tutte le configurazioni degli agenti
   getAllAgents(): AgentConfig[] {
     return this.agents;
   }
 
+  // Restituisce l'agente attualmente attivo nella conversazione
   getActiveAgent(): AgentConfig | null {
     return this.conversationStateSubject.value.currentAgent;
   }
 
-  // METODO PRINCIPALE: Avvio conversazione
-  // Aggiungi questo metodo nella tua classe ConversationService
+  /**
+   * Imposta l'agente attivo per la conversazione in base al percorso della rotta fornito.
+   * Gestisce l'avvio e la chiusura delle conversazioni necessarie per il cambio di agente.
+   * @param routePath Il percorso della rotta della pagina (es. 'vale', 'contatti').
+   */
+  async setActiveAgentByRoute(routePath: string): Promise<void> {
+    const cleanRoute = routePath.startsWith('/') ? routePath.substring(1) : routePath;
+    const targetAgent = this.agents.find(agent => agent.id === cleanRoute);
+    const currentState = this.conversationStateSubject.value;
 
-// Aggiungi questo metodo nella tua classe ConversationService
-
-// METODO PRINCIPALE: Avvio conversazione con tool configurati
-async startConversation(agentId: string): Promise<void> {
-  try {
-    const agent = this.getAgentById(agentId);
-    if (!agent) {
-      throw new Error(`Agente ${agentId} non trovato`);
+    // Se non c'è un agente target per questa rotta e una conversazione è attiva, la termina.
+    // Questo gestisce casi come la navigazione alla homepage o a una rotta non riconosciuta.
+    if (!targetAgent) {
+      if (currentState.status === 'connected') {
+        console.log(`❌ Nessun agente per la rotta '${routePath}'. Terminando la conversazione attiva.`);
+        await this.endConversation();
+      }
+      this.updateState({ currentAgent: null }); // Assicura che currentAgent sia null se non c'è un agente per la rotta
+      return;
     }
 
-    if (this.conversation) {
-      await this.endConversation();
-    }
-
-    this.updateState({ 
-      status: 'connecting', 
-      currentAgent: { ...agent },
-      error: undefined,
-      visualState: 'connecting',
-      isAgentSpeaking: false,
-      isUserSpeaking: false,
-      speakingIntensity: 0
-    });
-
-    console.log(`🔄 Avvio conversazione con ${agent.name} (colore: ${agent.color})...`);
-
-    const sessionOptions: SessionOptions = {
-      agentId: agent.agentId,
+    // Se nessun agente è attualmente attivo, o se l'agente corrente è diverso dall'agente target
+    if (!currentState.currentAgent || currentState.currentAgent.id !== targetAgent.id) {
+      console.log(`🔄 Rotta cambiata. Tentativo di switch/start agente a: ${targetAgent.name}`);
       
-      // CONFIGURAZIONE DEI TOOL (formato semplificato)
-      clientTools: {
-        redirectToExternalURL: (parameters: any) => {
-          console.log('🔧 Tool redirectToExternalURL chiamato:', parameters);
-          this.handleRedirectTool(parameters);
-          return `Reindirizzamento a ${parameters.url} completato`;
+      // Termina la conversazione corrente, se presente, per stabilire una nuova connessione con il nuovo agente.
+      if (currentState.status === 'connected') {
+        await this.endConversation();
+      }
+      
+      // Avvia la conversazione con il nuovo agente.
+      await this.startConversation(targetAgent.id);
+    } else {
+      console.log(`ℹ️ Agente ${targetAgent.name} già attivo per la rotta '${routePath}'. Nessun cambio necessario.`);
+      // Se lo stesso agente è già attivo, assicurati solo che lo stato visivo sia coerente
+      this.updateState({ 
+        currentAgent: { ...targetAgent }, // Assicura che venga usata la configurazione più recente dell'agente (es. colore)
+        visualState: currentState.isAgentSpeaking ? 'speaking' : (currentState.isUserSpeaking ? 'listening' : 'idle')
+      });
+    }
+  }
+
+  /**
+   * Avvia una nuova sessione di conversazione con l'agente specificato.
+   * @param agentId L'ID interno dell'agente con cui avviare la conversazione.
+   */
+  async startConversation(agentId: string): Promise<void> {
+    try {
+      const agent = this.getAgentById(agentId);
+      if (!agent) {
+        throw new Error(`Agente ${agentId} non trovato`);
+      }
+
+      // Se una conversazione è già attiva con lo STESSO agente, non fare nulla
+      if (this.conversationStateSubject.value.status === 'connected' && 
+          this.conversationStateSubject.value.currentAgent?.id === agentId) {
+        console.log(`✅ Conversazione con ${agent.name} già attiva. Nessuna azione necessaria.`);
+        return;
+      }
+
+      // Termina la conversazione esistente se è con un agente DIVERSO o se deve essere resettata
+      if (this.conversation && this.conversationStateSubject.value.currentAgent?.id !== agentId) {
+        await this.endConversation();
+      }
+
+      // Aggiorna lo stato per indicare che la connessione è in corso
+      this.updateState({ 
+        status: 'connecting', 
+        currentAgent: { ...agent },
+        error: undefined,
+        visualState: 'connecting',
+        isAgentSpeaking: false,
+        isUserSpeaking: false,
+        speakingIntensity: 0
+      });
+
+      console.log(`🔄 Avvio conversazione con ${agent.name} (colore: ${agent.color})...`);
+
+      // Configura le opzioni della sessione per l'SDK di ElevenLabs
+      const sessionOptions: SessionOptions = {
+        agentId: agent.agentId,
+        
+        // Definisce i tool client-side che l'agente può chiamare
+        clientTools: {
+          redirectToExternalURL: (parameters: any) => {
+            console.log('🔧 Tool redirectToExternalURL chiamato:', parameters);
+            this.handleRedirectTool(parameters);
+            return `Reindirizzamento a ${parameters.url} completato`;
+          },
+          
+          transferToAgent: (parameters: any) => {
+            console.log('🔧 Tool transferToAgent chiamato:', parameters);
+            this.handleAgentTransferTool(parameters);
+            return `Trasferimento a ${parameters.agentName || parameters.agentId} completato`;
+          }
         },
         
-        transferToAgent: (parameters: any) => {
-          console.log('🔧 Tool transferToAgent chiamato:', parameters);
-          this.handleAgentTransferTool(parameters);
-          return `Trasferimento a ${parameters.agentName || parameters.agentId} completato`;
+        // Callback quando la connessione è stabilita
+        onConnect: () => {
+          console.log(`✅ Connesso all'agente ${agent.name}`);
+          this.updateState({
+            status: 'connected',
+            conversationId: this.conversation?.getId(), // Usa optional chaining
+            error: undefined,
+            visualState: 'listening',
+            currentAgent: { ...agent }
+          });
+          this.startVolumeMonitoring(); // Avvia il monitoraggio del volume
+        },
+
+        // Callback quando la connessione viene disconnessa
+        onDisconnect: () => {
+          console.log(`❌ Disconnesso dall'agente ${agent.name}`);
+          this.updateState({
+            status: 'disconnected',
+            mode: 'idle',
+            conversationId: undefined,
+            visualState: 'idle',
+            isAgentSpeaking: false,
+            isUserSpeaking: false,
+            lastSpeaker: null,
+            speakingIntensity: 0
+          });
+          this.stopVolumeMonitoring(); // Ferma il monitoraggio del volume
+        },
+
+        // Callback quando viene ricevuto un messaggio (testo)
+        onMessage: ({ message, source }: { message: string; source: Role }) => {
+          console.log(`💬 Messaggio da ${source} (${agent.name}):`, message);
+          const speaker: 'agent' | 'user' = String(source).toLowerCase() === 'agent' ? 'agent' : 'user';
+          
+          this.updateState({ 
+            lastMessage: message,
+            lastSpeaker: speaker
+          });
+        },
+
+        // Callback quando lo stato generale della sessione cambia
+        onStatusChange: ({ status }: { status: Status }) => {
+          console.log(`🔄 Cambio stato: ${status}`);
+          this.updateVisualStateFromStatus(status);
+        },
+
+        // Callback quando la modalità di interazione cambia (parlato, ascolto, inattivo)
+        onModeChange: ({ mode }: { mode: Mode }) => {
+          console.log(`🎤 Cambio modalità: ${mode}`);
+          const internalMode = mode as ConversationState['mode'];
+          
+          const isAgentSpeaking = internalMode === 'speaking';
+          const isUserSpeaking = internalMode === 'listening';
+          
+          this.updateState({ 
+            mode: internalMode,
+            isAgentSpeaking,
+            isUserSpeaking,
+            visualState: this.getVisualStateFromMode(internalMode),
+            lastSpeaker: isAgentSpeaking ? 'agent' : (isUserSpeaking ? 'user' : this.conversationStateSubject.value.lastSpeaker)
+          });
+        },
+
+        // Callback in caso di errore della sessione
+        onError: (error: any) => {
+          console.error('❌ Errore conversazione:', error);
+          this.updateState({
+            error: `Errore di connessione con ${agent.name}: ${error.message || error}`,
+            status: 'disconnected',
+            mode: 'idle',
+            visualState: 'error',
+            isAgentSpeaking: false,
+            isUserSpeaking: false,
+            speakingIntensity: 0
+          });
+          this.stopVolumeMonitoring();
         }
-      },
-      
-      onConnect: () => {
-        console.log(`✅ Connesso all'agente ${agent.name}`);
-        this.updateState({
-          status: 'connected',
-          conversationId: this.conversation?.getId(),
-          error: undefined,
-          visualState: 'listening',
-          currentAgent: { ...agent }
-        });
-        this.startVolumeMonitoring();
-      },
+      };
 
-      onDisconnect: () => {
-        console.log(`❌ Disconnesso dall'agente ${agent.name}`);
-        this.updateState({
-          status: 'disconnected',
-          mode: 'idle',
-          conversationId: undefined,
-          visualState: 'idle',
-          isAgentSpeaking: false,
-          isUserSpeaking: false,
-          lastSpeaker: null,
-          speakingIntensity: 0
-        });
-        this.stopVolumeMonitoring();
-      },
+      // Avvia la sessione di conversazione con ElevenLabs
+      this.conversation = await Conversation.startSession(sessionOptions);
+      console.log(`🚀 Conversazione avviata con ${agent.name}, ID: ${this.conversation?.getId()}`); // Usa optional chaining
 
-      onMessage: ({ message, source }: { message: string; source: Role }) => {
-        console.log(`💬 Messaggio da ${source} (${agent.name}):`, message);
-        const speaker: 'agent' | 'user' = String(source).toLowerCase() === 'agent' ? 'agent' : 'user';
-        
-        this.updateState({ 
-          lastMessage: message,
-          lastSpeaker: speaker
-        });
-      },
-
-      onStatusChange: ({ status }: { status: Status }) => {
-        console.log(`🔄 Cambio stato: ${status}`);
-        this.updateState({ 
-          status: status as ConversationState['status'] 
-        });
-        this.updateVisualStateFromStatus(status);
-      },
-
-      onModeChange: ({ mode }: { mode: Mode }) => {
-        console.log(`🎤 Cambio modalità: ${mode}`);
-        const internalMode = mode as ConversationState['mode'];
-        
-        const isAgentSpeaking = internalMode === 'speaking';
-        const isUserSpeaking = internalMode === 'listening';
-        
-        this.updateState({ 
-          mode: internalMode,
-          isAgentSpeaking,
-          isUserSpeaking,
-          visualState: this.getVisualStateFromMode(internalMode),
-          lastSpeaker: isAgentSpeaking ? 'agent' : (isUserSpeaking ? 'user' : this.conversationStateSubject.value.lastSpeaker)
-        });
-      },
-
-      onError: (error: any) => {
-        console.error('❌ Errore conversazione:', error);
-        this.updateState({
-          error: `Errore di connessione con ${agent.name}: ${error.message || error}`,
-          status: 'disconnected',
-          mode: 'idle',
-          visualState: 'error',
-          isAgentSpeaking: false,
-          isUserSpeaking: false,
-          speakingIntensity: 0
-        });
-        this.stopVolumeMonitoring();
-      }
-    };
-
-    this.conversation = await Conversation.startSession(sessionOptions);
-    console.log(`🚀 Conversazione avviata con ${agent.name}, ID: ${this.conversation.getId()}`);
-
-  } catch (error) {
-    console.error('❌ Errore nell\'avvio della conversazione:', error);
-    this.updateState({ 
-      error: error instanceof Error ? error.message : 'Errore sconosciuto nell\'avvio della conversazione',
-      status: 'disconnected',
-      currentAgent: null,
-      visualState: 'error'
-    });
-    throw error;
+    } catch (error) {
+      console.error('❌ Errore nell\'avvio della conversazione:', error);
+      this.updateState({ 
+        error: error instanceof Error ? error.message : 'Errore sconosciuto nell\'avvio della conversazione',
+        status: 'disconnected',
+        currentAgent: null,
+        visualState: 'error'
+      });
+      throw error;
+    }
   }
-}
 
-// Aggiorna anche i metodi handler per essere più semplici
-private handleRedirectTool(parameters: any): void {
-  const { url, description } = parameters;
-  
-  console.log(`🔗 Gestione redirect tool: ${url} (${description || 'Nessuna descrizione'})`);
-  
-  try {
-    // Mostra notifica
-    this.showNotification(description || `Reindirizzamento a ${url}...`);
-    
-    // Controlla se è un URL interno
-    if (this.isInternalUrl(url)) {
-      const route = url.startsWith('/') ? url.substring(1) : url;
-      
-      // Breve delay per mostrare la notifica, poi naviga
-      setTimeout(() => {
-        this.router.navigate([route]).then(() => {
-          console.log(`✅ Navigazione completata: ${route}`);
-        }).catch(error => {
+  /**
+   * Gestisce il tool `redirectToExternalURL` chiamato dall'agente.
+   * Esegue un reindirizzamento a un URL interno o esterno.
+   * @param parameters I parametri del tool, inclusi `url` e `description`.
+   */
+  private handleRedirectTool(parameters: any): void {
+    const { url, description } = parameters;
+    console.log(`🔗 Gestione redirect tool: ${url} (${description || 'Nessuna descrizione'})`);
+    try {
+      this.showNotification(description || `Reindirizzamento a ${url}...`);
+      if (this.isInternalUrl(url)) {
+        const route = url.startsWith('/') ? url.substring(1) : url;
+        // Naviga verso la rotta interna
+        this.router.navigate([route]).catch(error => {
           console.error('❌ Errore navigazione:', error);
         });
-      }, 800);
-    } else {
-      // URL esterno
-      window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        // Apre un nuovo tab per URL esterni
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    } catch (error) {
+      console.error('❌ Errore nel redirect tool:', error);
     }
-  } catch (error) {
-    console.error('❌ Errore nel redirect tool:', error);
   }
-}
 
-private handleAgentTransferTool(parameters: any): void {
-  const { agentId, agentName } = parameters;
-  
-  console.log(`🔄 Tool transfer agente: ${agentId} (${agentName || 'Nome non specificato'})`);
-  
-  try {
+  /**
+   * Gestisce il tool `transferToAgent` chiamato dall'agente.
+   * Avvia la navigazione verso la pagina del nuovo agente.
+   * Si assume che l'agente precedente abbia già pronunciato il messaggio di trasferimento.
+   * @param parameters I parametri del tool, inclusi `agentId` e `agentName`.
+   */
+  private async handleAgentTransferTool(parameters: any): Promise<void> {
+    const { agentId, agentName } = parameters;
+    console.log(`🔄 Tool transfer agente: ${agentId} (${agentName || 'Nome non specificato'})`);
+
     const targetAgent = this.getAgentById(agentId);
-    if (targetAgent) {
-      this.updateState({
-        currentAgent: { ...targetAgent }
-      });
-      
-      this.showNotification(`Trasferimento a ${targetAgent.name}...`);
-      
-      // Naviga alla pagina dell'agente
-      setTimeout(() => {
-        this.router.navigate([agentId]).then(() => {
-          // Avvia la nuova conversazione dopo la navigazione
-          setTimeout(() => {
-            this.startConversation(agentId);
-          }, 500);
-        });
-      }, 800);
-    } else {
+
+    if (!targetAgent) {
       console.error(`❌ Agente ${agentId} non trovato`);
       this.showNotification(`Agente ${agentId} non trovato`, 'error');
+      return;
     }
-  } catch (error) {
-    console.error('❌ Errore nel transfer tool:', error);
-    this.showNotification(`Errore nel trasferimento: ${error}`, 'error');
+
+    // A questo punto, assumiamo che l'agente precedente abbia già pronunciato il messaggio di trasferimento
+    // prima di chiamare questo tool. Quindi, procediamo direttamente con la navigazione.
+    console.log(`✅ Agente precedente ha chiamato il tool di trasferimento. Procedo con il reindirizzamento.`);
+    this.showNotification(`Trasferimento a ${targetAgent.name}...`);
+
+    try {
+      // Esegui la navigazione immediatamente.
+      // Il MainLayoutComponent rileverà il cambio di rotta e chiamerà setActiveAgentByRoute,
+      // che terminerà la vecchia conversazione e avvierà quella con il nuovo agente.
+      await this.router.navigate([agentId]);
+      console.log(`✅ Navigazione completata per trasferimento agente: ${agentId}`);
+    } catch (error) {
+      console.error('❌ Errore durante la navigazione per il trasferimento:', error);
+      this.showNotification(`Errore nel trasferimento: ${error}`, 'error');
+    }
   }
-}
-  // NUOVO: Metodo per cambiare agente e chiamare il tool
+
+  /**
+   * Metodo per la selezione esplicita di un agente vocale, tipicamente dalla schermata iniziale.
+   * Attiva la navigazione alla pagina dell'agente, e il MainLayoutComponent gestirà l'attivazione.
+   * @param newAgentId L'ID interno dell'agente a cui passare.
+   */
   async switchAgentWithTool(newAgentId: string): Promise<void> {
-    const currentState = this.conversationStateSubject.value;
     const newAgent = this.getAgentById(newAgentId);
-    
     if (!newAgent) {
       console.error(`Agente ${newAgentId} non trovato`);
       return;
     }
 
-    console.log(`🔄 Cambio agente con tool: ${currentState.currentAgent?.name} → ${newAgent.name}`);
-    
-    // 1. Prima aggiorna l'agente corrente per l'illuminazione
-    this.updateState({
-      currentAgent: { ...newAgent }
-    });
+    const currentRoute = this.router.url.startsWith('/') ? this.router.url.substring(1) : this.router.url;
+    if (currentRoute !== newAgentId) {
+        // Se non siamo sulla pagina di destinazione, naviga lì. MainLayoutComponent gestirà quindi l'attivazione dell'agente.
+        console.log(`Navigazione a ${newAgentId} per il cambio agente.`);
+        this.router.navigate([newAgentId]);
+    } else {
+        // Se siamo già sulla pagina, attiva direttamente l'agente.
+        // Questo gestisce i casi in cui l'utente clicca sull'icona del microfono sulla pagina già attiva.
+        console.log(`Già sulla pagina ${newAgentId}. Attivazione diretta dell'agente.`);
+        await this.setActiveAgentByRoute(newAgentId);
+    }
+  }
 
-    // 2. Se c'è una conversazione attiva, simula il tool call
-    if (currentState.status === 'connected') {
-      console.log('🔧 Simulazione tool call redirectToExternalURL...');
-      
-      // Simula la chiamata del tool redirectToExternalURL
-      this.simulateToolCall('redirectToExternalURL', {
-        url: `/${newAgentId}`,
-        description: `Reindirizzamento a ${newAgent.name}`
+  // Metodo di compatibilità, ora chiama switchAgentWithTool
+  async switchAgent(newAgentId: string): Promise<void> {
+    return this.switchAgentWithTool(newAgentId);
+  }
+
+  /**
+   * Termina la sessione di conversazione attiva.
+   */
+  async endConversation(): Promise<void> {
+    if (!this.conversation) {
+      return;
+    }
+
+    try {
+      await this.conversation.endSession();
+      console.log('🔚 Conversazione terminata');
+    } catch (error) {
+      console.error('❌ Errore nella chiusura della conversazione:', error);
+    } finally {
+      this.conversation = null; // Resetta l'istanza della conversazione
+      this.stopVolumeMonitoring(); // Ferma il monitoraggio del volume
+      this.updateState({ // Resetta lo stato della conversazione
+        status: 'disconnected',
+        mode: 'idle',
+        conversationId: undefined,
+        lastMessage: undefined,
+        error: undefined,
+        inputVolume: 0,
+        outputVolume: 0,
+        visualState: 'idle',
+        isAgentSpeaking: false,
+        isUserSpeaking: false,
+        lastSpeaker: null,
+        speakingIntensity: 0
       });
-      
-      // Breve delay per permettere al tool di essere processato
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-
-    // 3. Procedi con il cambio effettivo dell'agente
-    if (currentState.status === 'connected') {
-      await this.endConversation();
-    }
-    
-    await this.startConversation(newAgentId);
-  }
-
-  // NUOVO: Simula una chiamata al tool per testare l'integrazione
-  private simulateToolCall(toolName: string, parameters: any): void {
-    console.log(`🔧 Simulazione tool call: ${toolName}`, parameters);
-    
-    // Crea l'evento personalizzato che simula il tool call
-    const toolCallEvent = new CustomEvent('elevenlabs-tool-call', {
-      detail: {
-        toolName,
-        parameters,
-        timestamp: Date.now()
-      }
-    });
-
-    // Dispatch l'evento per permettere ad altri componenti di intercettarlo
-    document.dispatchEvent(toolCallEvent);
-
-    // Esegui direttamente l'azione del tool
-    switch (toolName) {
-      case 'redirectToExternalURL':
-        this.handleRedirectTool(parameters);
-        break;
-      
-      case 'transferToAgent':
-        this.handleAgentTransferTool(parameters);
-        break;
-        
-      default:
-        console.log(`🤷 Tool sconosciuto: ${toolName}`);
     }
   }
 
-  
-
-  // NUOVO: Verifica se un URL è interno
+  // Controlla se un URL è interno all'applicazione
   private isInternalUrl(url: string): boolean {
     const internalRoutes = [
       '/vale', '/chi-siamo', '/contatti', '/prodotti', '/consulenza', '/formazione',
-      'vale', 'chi-siamo', 'contatti', 'prodotti', 'consulenza', 'formazione'
+      'vale', 'chi-siamo', 'contatti', 'prodotti', 'consulenza', 'formazione', '', 'home'
     ];
-
-    return internalRoutes.includes(url.toLowerCase()) || 
+    const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+    return internalRoutes.includes(cleanUrl.toLowerCase()) || 
            (url.startsWith('/') && !url.startsWith('//') && !url.includes('://'));
   }
 
-  // NUOVO: Mostra notifica
+  // Mostra una notifica temporanea all'utente
   private showNotification(message: string, type: 'info' | 'error' = 'info'): void {
     const notification = document.createElement('div');
     const bgColor = type === 'error' ? '#EF4444' : '#3B82F6';
@@ -449,7 +507,6 @@ private handleAgentTransferTool(parameters: any): void {
       </div>
     `;
     
-    // Aggiungi CSS per l'animazione se non esiste
     if (!document.getElementById('notification-styles')) {
       const style = document.createElement('style');
       style.id = 'notification-styles';
@@ -464,7 +521,6 @@ private handleAgentTransferTool(parameters: any): void {
     
     document.body.appendChild(notification);
     
-    // Rimuovi dopo 3 secondi
     setTimeout(() => {
       if (notification.parentNode) {
         notification.parentNode.removeChild(notification);
@@ -472,43 +528,7 @@ private handleAgentTransferTool(parameters: any): void {
     }, 3000);
   }
 
-  // Metodo di cambio agente esistente (ora chiama la versione con tool)
-  async switchAgent(newAgentId: string): Promise<void> {
-    return this.switchAgentWithTool(newAgentId);
-  }
-
-  async endConversation(): Promise<void> {
-    if (!this.conversation) {
-      return;
-    }
-
-    try {
-      await this.conversation.endSession();
-      console.log('🔚 Conversazione terminata');
-    } catch (error) {
-      console.error('❌ Errore nella chiusura della conversazione:', error);
-    } finally {
-      this.conversation = null;
-      this.stopVolumeMonitoring();
-      this.updateState({
-        status: 'disconnected',
-        mode: 'idle',
-        currentAgent: null,
-        conversationId: undefined,
-        lastMessage: undefined,
-        error: undefined,
-        inputVolume: 0,
-        outputVolume: 0,
-        visualState: 'idle',
-        isAgentSpeaking: false,
-        isUserSpeaking: false,
-        lastSpeaker: null,
-        speakingIntensity: 0
-      });
-    }
-  }
-
-  // HELPER METHODS
+  // Metodi di supporto per la gestione dello stato visivo
   private getVisualStateFromMode(mode: ConversationState['mode']): ConversationState['visualState'] {
     switch (mode) {
       case 'speaking': return 'speaking';
@@ -541,6 +561,7 @@ private handleAgentTransferTool(parameters: any): void {
     }
   }
 
+  // Avvia il monitoraggio del volume di input e output per aggiornare lo stato visivo
   private startVolumeMonitoring(): void {
     if (this.volumeUpdateInterval) {
       clearInterval(this.volumeUpdateInterval);
@@ -586,12 +607,13 @@ private handleAgentTransferTool(parameters: any): void {
             this.updateState({ inputVolume, outputVolume });
           }
         } catch (error) {
-          // Ignore errori di volume monitoring
+          // Ignora errori di monitoraggio del volume (possono verificarsi se l'audio è disabilitato rapidamente)
         }
       }
     }, 100);
   }
 
+  // Ferma il monitoraggio del volume
   private stopVolumeMonitoring(): void {
     if (this.volumeUpdateInterval) {
       clearInterval(this.volumeUpdateInterval);
@@ -599,14 +621,14 @@ private handleAgentTransferTool(parameters: any): void {
     }
   }
 
-  // PUBLIC METHODS
+  // Imposta il volume dell'output dell'agente
   setOutputVolume(volume: number): void {
     if (!this.conversation) {
       console.warn('⚠️ Nessuna conversazione attiva per impostare il volume');
       return;
     }
 
-    const clampedVolume = Math.max(0, Math.min(1, volume));
+    const clampedVolume = Math.max(0, Math.min(1, volume)); // Limita il volume tra 0 e 1
     
     try {
       this.conversation.setVolume({ volume: clampedVolume });
@@ -616,22 +638,27 @@ private handleAgentTransferTool(parameters: any): void {
     }
   }
 
+  // Restituisce l'ID della conversazione corrente
   getCurrentConversationId(): string | null {
     return this.conversation?.getId() || null;
   }
 
+  // Restituisce i dati di frequenza dell'input audio
   getInputFrequencyData(): Uint8Array | null {
     return this.conversation?.getInputByteFrequencyData() || null;
   }
 
+  // Restituisce i dati di frequenza dell'output audio
   getOutputFrequencyData(): Uint8Array | null {
     return this.conversation?.getOutputByteFrequencyData() || null;
   }
 
+  // Restituisce lo stato attuale della conversazione
   getCurrentState(): ConversationState {
     return this.conversationStateSubject.value;
   }
 
+  // Aggiorna lo stato della conversazione e notifica i sottoscrittori
   private updateState(newState: Partial<ConversationState>): void {
     const currentState = this.conversationStateSubject.value;
     const updatedState = {
@@ -639,6 +666,7 @@ private handleAgentTransferTool(parameters: any): void {
       ...newState
     };
     
+    // Log per il cambio di colore dell'agente, utile per il debug visivo
     if (newState.currentAgent && newState.currentAgent.id !== currentState.currentAgent?.id) {
       console.log(`🎨 Cambio illuminazione: ${currentState.currentAgent?.name} (${currentState.currentAgent?.color}) → ${newState.currentAgent.name} (${newState.currentAgent.color})`);
     }
@@ -646,7 +674,7 @@ private handleAgentTransferTool(parameters: any): void {
     this.conversationStateSubject.next(updatedState);
   }
 
-  // STATUS METHODS
+  // Metodi di convenienza per controllare lo stato
   isConnected(): boolean {
     return this.conversationStateSubject.value.status === 'connected';
   }
@@ -679,8 +707,9 @@ private handleAgentTransferTool(parameters: any): void {
     return this.conversationStateSubject.value.speakingIntensity;
   }
 
+  // Metodo chiamato quando il servizio viene distrutto (pulizia risorse)
   ngOnDestroy(): void {
-    this.endConversation();
-    this.stopVolumeMonitoring();
+    this.endConversation(); // Termina qualsiasi conversazione attiva
+    this.stopVolumeMonitoring(); // Ferma il monitoraggio del volume
   }
 }

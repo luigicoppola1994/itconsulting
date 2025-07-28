@@ -1,7 +1,6 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, OnDestroy, ChangeDetectionStrategy, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { filter, takeUntil } from 'rxjs/operators';
+import { RouterModule, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 interface MenuItem {
@@ -15,7 +14,8 @@ interface MenuItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+  styleUrls: ['./sidebar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isOpen: boolean = true;
@@ -23,11 +23,11 @@ export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
   @Output() closeSidebar = new EventEmitter<void>();
   @Output() backToHome = new EventEmitter<void>();
   @Output() toggleSidebar = new EventEmitter<void>();
-
+  
   isEntering: boolean = false;
   private destroy$ = new Subject<void>();
-  private hasAnimated: boolean = false; // Flag per evitare animazioni multiple
-
+  private hasAnimated: boolean = false;
+  
   menuItems: MenuItem[] = [
     { name: 'VALE', image: '/assets/avatars/mioavatar.png', link: 'vale' },
     { name: 'CHI SIAMO', image: '/assets/avatars/mioavatar.png', link: 'chi-siamo' },
@@ -40,27 +40,20 @@ export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Se la sidebar è aperta all'inizializzazione e non ha mai animato, attiva l'animazione
+    // Anima solo la prima volta che la sidebar si apre
     if (this.isOpen && !this.hasAnimated) {
       this.triggerEnterAnimation();
     }
-
-    // Ascolta i cambi di route per aggiornare l'item selezionato
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((event: NavigationEnd) => {
-        this.updateSelectedItem(event.url);
-      });
   }
 
-  ngOnChanges(): void {
-    // Quando isOpen cambia da false a true E non ha mai animato, attiva l'animazione
-    if (this.isOpen && !this.isEntering && !this.hasAnimated) {
+  ngOnChanges(changes: SimpleChanges): void {
+    // Anima solo quando isOpen cambia da false a true, non per altri cambiamenti
+    if (changes['isOpen'] && changes['isOpen'].currentValue && !changes['isOpen'].previousValue && !this.hasAnimated) {
       this.triggerEnterAnimation();
     }
+    
+    // Se selectedItem cambia, NON rianimare la sidebar
+    // L'animazione dovrebbe avvenire solo quando la sidebar si apre/chiude
   }
 
   ngOnDestroy(): void {
@@ -70,30 +63,14 @@ export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
 
   private triggerEnterAnimation(): void {
     this.isEntering = true;
-    this.hasAnimated = true; // Segna che l'animazione è stata eseguita
+    this.hasAnimated = true;
     
-    // Rimuovi la classe dopo che l'animazione è completata - ULTRA VELOCE
     setTimeout(() => {
       this.isEntering = false;
-    }, 400); // Durata totale ridotta (0.2s slide + 0.2s items)
-  }
-
-  private updateSelectedItem(url: string): void {
-    // Rimuovi lo slash iniziale se presente
-    const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
-    
-    // Trova l'item corrispondente alla route corrente
-    const currentItem = this.menuItems.find(item => item.link === cleanUrl);
-    if (currentItem) {
-      this.selectedItem = currentItem;
-    }
+    }, 400);
   }
 
   onItemClick(item: MenuItem): void {
-    // Aggiorna immediatamente l'item selezionato senza aspettare il routing
-    this.selectedItem = item;
-    
-    // Naviga senza ricaricare la sidebar
     this.router.navigate([item.link]);
   }
 
@@ -102,7 +79,6 @@ export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onBackToHome(): void {
-    this.hasAnimated = false; // Reset per permettere l'animazione quando si torna alla home
     this.backToHome.emit();
   }
 

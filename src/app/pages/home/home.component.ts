@@ -97,49 +97,37 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Monitora lo stato della conversazione
     this.conversationService.conversationState$
       .pipe(takeUntil(this.destroy$))
       .subscribe(state => {
         const previousState = { ...this.conversationState };
         this.conversationState = state;
         
-        // Rileva cambio di agente
         this.detectAgentChange(previousState, state);
         
-        console.log('🎭 Stato conversazione aggiornato:', {
-          visualState: state.visualState,
-          currentAgent: state.currentAgent?.name,
-          color: state.currentAgent?.color
-        });
       });
 
     // Imposta VALE come agente predefinito
     this.selectedAgentForVoice = this.avatars[0];
 
-    // RIMOSSO: Non servono più i callback obsoleti
-    // this.conversationService.setRedirectCallback(...);
-    // this.conversationService.setAgentChangeCallback(...);
-    
     console.log('✅ HomeComponent inizializzato con nuovo sistema tool call');
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    if (this.conversationState.status === 'connected') {
-      this.conversationService.endConversation();
-    }
+    // No need to call endConversation here, as MainLayoutComponent will manage it on route change or when leaving agent-specific pages.
+    // if (this.conversationState.status === 'connected') {
+    //   this.conversationService.endConversation();
+    // }
   }
 
-  // Rileva cambio di agente
   private detectAgentChange(previousState: ConversationState, currentState: ConversationState): void {
     if (currentState.currentAgent && 
         previousState.currentAgent?.id !== currentState.currentAgent?.id) {
       
       console.log(`🔄 Rilevato cambio agente: ${previousState.currentAgent?.name} → ${currentState.currentAgent.name}`);
       
-      // Aggiorna selectedAgentForVoice per mantenere coerenza
       const newSelectedAgent = this.avatars.find(avatar => 
         avatar.name === currentState.currentAgent.name
       );
@@ -154,9 +142,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   onAvatarClick(avatar: Avatar): void {
     if (this.isExiting) return;
 
-    if (this.conversationState.status === 'connected') {
-      this.conversationService.endConversation();
-    }
+    // REMOVED: No longer end conversation here. MainLayoutComponent will manage.
+    // if (this.conversationState.status === 'connected') {
+    //   this.conversationService.endConversation();
+    // }
 
     this.isExiting = true;
 
@@ -165,18 +154,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     }, 400);
   }
 
-  // AGGIORNATO: Usa il nuovo metodo switchAgentWithTool
   onAvatarVoiceSelect(avatar: Avatar): void {
     console.log(`🎤 Selezione vocale agente: ${avatar.name}`);
     this.selectedAgentForVoice = avatar;
     
-    if (this.conversationState.status === 'connected' && 
-        this.conversationState.currentAgent?.name !== avatar.name) {
-      console.log(`🔄 Cambio agente con tool call da ${this.conversationState.currentAgent?.name} a ${avatar.name}`);
-      
-      // USA IL METODO CHE SIMULA IL TOOL CALL
-      this.conversationService.switchAgentWithTool(avatar.link);
-    }
+    // Call switchAgentWithTool, which will handle navigation and agent activation
+    this.conversationService.switchAgentWithTool(avatar.link);
   }
 
   async onMicrophoneClick(): Promise<void> {
@@ -185,10 +168,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.conversationState.status === 'disconnected') {
-      await this.startVoiceConversation();
-    } else if (this.conversationState.status === 'connected') {
+    if (this.conversationService.isConnected()) { // Use service method to check connection
       await this.endVoiceConversation();
+    } else {
+      await this.startVoiceConversation();
     }
   }
 
@@ -197,6 +180,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     try {
       console.log(`🚀 Avvio conversazione con: ${this.selectedAgentForVoice.name}`);
+      // Call startConversation directly from service; it handles existing connections.
       await this.conversationService.startConversation(this.selectedAgentForVoice.link);
     } catch (error) {
       console.error('Errore nell\'avvio della conversazione vocale:', error);
@@ -267,12 +251,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     const illumination = this.getAvatarIllumination(avatar);
     const intensity = this.getAvatarPulseIntensity(avatar);
     
+    // Only log if connected to avoid excessive logging during idle state
     if (this.isAvatarConnected(avatar)) {
       console.log(`🎨 Stili per ${avatar.name}:`, {
         illumination,
         intensity,
         currentAgentColor: this.conversationState.currentAgent?.color,
-        avatarColor: avatar.color
+        avatarColor: avatar.color,
+        visualState: this.conversationState.visualState,
+        isAgentSpeaking: this.conversationState.isAgentSpeaking,
+        isUserSpeaking: this.conversationState.isUserSpeaking
       });
     }
     
@@ -291,18 +279,22 @@ export class HomeComponent implements OnInit, OnDestroy {
       classes.push('clicked');
     }
     
+    // 'voice-selected' indicates the avatar chosen for voice interaction, regardless of connection status
     if (this.isAvatarSelectedForVoice(avatar)) {
       classes.push('voice-selected');
     }
     
+    // 'voice-connected' means this specific avatar's agent is currently connected (actively talking to us)
     if (this.isAvatarConnected(avatar)) {
       classes.push('voice-connected');
     }
     
+    // 'speaking' means the agent linked to this avatar is currently speaking
     if (this.isAvatarSpeaking(avatar)) {
       classes.push('speaking');
     }
     
+    // 'user-speaking' means the user is currently speaking AND this avatar's agent is connected
     if (this.conversationState.isUserSpeaking && this.isAvatarConnected(avatar)) {
       classes.push('user-speaking');
     }
@@ -350,7 +342,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     return {};
   }
 
-  // METODI DI DEBUG E TEST
   debugCurrentState(): void {
     console.log('🔍 Debug Stato Corrente:', {
       selectedAgentForVoice: this.selectedAgentForVoice?.name,
@@ -358,55 +349,55 @@ export class HomeComponent implements OnInit, OnDestroy {
       currentAgentColor: this.conversationState.currentAgent?.color,
       status: this.conversationState.status,
       visualState: this.conversationState.visualState,
-      isAgentSpeaking: this.conversationState.isAgentSpeaking
+      isAgentSpeaking: this.conversationState.isAgentSpeaking,
+      isUserSpeaking: this.conversationState.isUserSpeaking,
+      conversationId: this.conversationState.conversationId,
+      lastMessage: this.conversationState.lastMessage,
+      error: this.conversationState.error,
+      inputVolume: this.conversationState.inputVolume,
+      outputVolume: this.conversationState.outputVolume,
+      speakingIntensity: this.conversationState.speakingIntensity
     });
   }
 
   forceRefreshIllumination(): void {
     if (this.conversationState.currentAgent) {
       console.log(`🔄 Forzando aggiornamento illuminazione per ${this.conversationState.currentAgent.name}`);
+      // Re-trigger styles by updating state if needed, or simply force change detection
+      this.conversationService['updateState']({}); // Access private method for a 'dummy' update
       setTimeout(() => {
         console.log('✅ Illuminazione aggiornata');
       }, 100);
     }
   }
 
+  // Simplified testSwitchAgent to just use the service's switchAgentWithTool
   testSwitchAgent(agentId: string): void {
-    if (this.conversationState.status === 'connected') {
-      console.log(`🧪 Test switch agent con tool: ${agentId}`);
-      this.conversationService.switchAgentWithTool(agentId);
-    } else {
-      console.log('⚠️ Nessuna conversazione attiva - avvia prima una conversazione');
-    }
+    console.log(`🧪 Test switch agent via button to: ${agentId}`);
+    this.conversationService.switchAgentWithTool(agentId);
   }
 
-  // NUOVO: Test completo del flusso tool call
   testToolCallFlow(): void {
     console.log('🧪 Test flusso completo tool call');
     
-    if (this.conversationState.status === 'connected') {
-      // Test con diversi agenti
-      const testAgents = ['contatti', 'prodotti', 'consulenza'];
-      let currentIndex = 0;
-      
-      const testNext = () => {
-        if (currentIndex < testAgents.length) {
-          const agentId = testAgents[currentIndex];
-          console.log(`🧪 Test ${currentIndex + 1}/${testAgents.length}: ${agentId}`);
-          
-          this.conversationService.switchAgentWithTool(agentId);
-          currentIndex++;
-          
-          // Test successivo dopo 3 secondi
-          setTimeout(testNext, 3000);
-        } else {
-          console.log('✅ Test completato');
-        }
-      };
-      
-      testNext();
-    } else {
-      console.log('⚠️ Nessuna conversazione attiva - avvia prima una conversazione per testare');
-    }
+    const testAgents = ['contatti', 'prodotti', 'consulenza'];
+    let currentIndex = 0;
+    
+    const testNext = () => {
+      if (currentIndex < testAgents.length) {
+        const agentId = testAgents[currentIndex];
+        console.log(`🧪 Test ${currentIndex + 1}/${testAgents.length}: ${agentId}`);
+        
+        this.conversationService.switchAgentWithTool(agentId);
+        currentIndex++;
+        
+        // Test successivo dopo 3 seconds
+        setTimeout(testNext, 3000);
+      } else {
+        console.log('✅ Test completato');
+      }
+    };
+    
+    testNext();
   }
 }

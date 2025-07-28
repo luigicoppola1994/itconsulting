@@ -271,15 +271,3 @@
   </div>
 </div>
 
-<!-- AGGIUNGI QUESTI BOTTONI TEMPORANEAMENTE PER DEBUG -->
-<div class="debug-controls" *ngIf="true" style="position: fixed; top: 10px; right: 10px; z-index: 1000; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px;">
-  <button (click)="debugCurrentState()" style="margin: 2px; padding: 5px 10px; background: #3B82F6; color: white; border: none; border-radius: 4px; cursor: pointer;">
-    Debug Stato
-  </button>
-  <button (click)="forceRefreshIllumination()" style="margin: 2px; padding: 5px 10px; background: #10B981; color: white; border: none; border-radius: 4px; cursor: pointer;">
-    Refresh Illuminazione
-  </button>
-  <button (click)="conversationService.switchAgent('contatti')" style="margin: 2px; padding: 5px 10px; background: #F59E0B; color: white; border: none; border-radius: 4px; cursor: pointer;">
-    Test Switch Agente
-  </button>
-</div>

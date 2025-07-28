@@ -103,3 +103,159 @@ html, body {
     }
   }
 }
+
+.main-layout-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #0c0c1e; // Sfondo scuro
+
+  .content-area {
+    flex-grow: 1;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    overflow-y: auto; // Abilita lo scroll verticale se il contenuto è troppo lungo
+    margin-left: 0; // Inizia senza sidebar
+    padding-bottom: 80px; // Spazio per la barra di controllo vocale
+
+    &.content-shifted {
+      margin-left: 250px; // Lascia spazio per la sidebar
+    }
+  }
+}
+
+// Stili per la barra di controllo vocale globale
+.voice-control-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px; // Altezza fissa
+  background-color: #1e1e3b; // Sfondo scuro per la barra
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+
+  // Variabili CSS per il colore dell'agente e l'intensità del parlato
+  --current-agent-color: #3B82F6; // Colore predefinito
+  --speaking-intensity: 0; // Intensità predefinita del polso
+
+  &.connected {
+    background-color: #2a2a4d; // Leggermente più chiaro quando connesso
+  }
+
+  &.speaking {
+    background: linear-gradient(90deg, #1e1e3b, var(--current-agent-color) 5%, #1e1e3b 95%);
+    background-size: 200% 100%;
+    animation: glow-bg 2s infinite alternate ease-in-out;
+  }
+
+  &.listening {
+    background-color: #3a3a5a; // Sfondo per "listening"
+  }
+
+  &.connecting {
+    background: linear-gradient(90deg, #1e1e3b, #777777 5%, #1e1e3b 95%);
+    background-size: 200% 100%;
+    animation: connecting-pulse 1.5s infinite ease-in-out;
+  }
+
+  &.error {
+    background-color: #EF4444; // Rosso per errore
+  }
+
+  .voice-control-center {
+    display: flex;
+    align-items: center;
+    gap: 20px; // Spazio tra gli elementi
+  }
+
+  .microphone-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #6a6a8a; // Colore base del pulsante
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden; // Nasconde il polso al di fuori del pulsante
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      background-color: #8b8bb0;
+    }
+
+    .microphone-icon {
+      width: 24px;
+      height: 24px;
+      filter: invert(100%); // Rende l'icona bianca
+      z-index: 1; // Assicura che l'icona sia sopra il polso
+    }
+
+    .microphone-pulse {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: var(--current-agent-color); // Colore del polso
+      opacity: 0;
+      animation: pulse-effect 1.5s infinite ease-out;
+      animation-play-state: paused; // Inizia in pausa
+    }
+
+    // Attiva il polso quando la barra è in stato "speaking"
+    .voice-control-bar.speaking & .microphone-pulse {
+      animation-play-state: running;
+      opacity: 0.7;
+    }
+  }
+
+  .voice-status-text {
+    font-size: 1.1em;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .agent-name-display {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10B981; // Verde per connesso
+      box-shadow: 0 0 5px #10B981;
+    }
+  }
+}
+
+@keyframes pulse-effect {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+@keyframes glow-bg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes connecting-pulse {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}

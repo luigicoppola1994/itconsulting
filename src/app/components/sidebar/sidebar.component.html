@@ -29,7 +29,7 @@
     <div class="sidebar-items">
       <div *ngFor="let item of menuItems; let i = index"
            class="sidebar-item"
-           [class.active]="selectedItem?.name === item.name"
+           [class.active]="selectedItem?.link === item.link"
            (click)="onItemClick(item)"
            role="menuitem" 
            tabindex="0"

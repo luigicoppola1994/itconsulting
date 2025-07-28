@@ -1,1 +1,97 @@
-<p>vale works!</p>
+<!-- vale.component.html -->
+<div class="homepage-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title animate-fade-in">
+        Costruisci con <span class="highlight">NOI</span> la tua carriera professionale
+        <br>nel settore Information Technology
+      </h1>
+      <p class="hero-subtitle animate-fade-in-delay">
+        Ogni giorno pubblichiamo opportunità di lavoro, rivoluziona la tua carriera, ti basta un click!
+      </p>
+      <div class="hero-quote animate-fade-in-delay-2">
+        <p>"Scopri con noi il valore della formazione scegli la tua carriera partendo dai nostri corsi professionali. 
+        itconsulting…l'informatica cucita addosso!!"</p>
+      </div>
+      <div class="hero-actions animate-fade-in-delay-3">
+        <button class="btn btn-primary" (click)="scrollToSection('candidati')">Per i Candidati</button>
+        <button class="btn btn-secondary" (click)="scrollToSection('aziende')">Per le Aziende</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <h2 class="section-title">Cosa ci rende speciali.</h2>
+      
+      <div class="features-grid">
+        <!-- Candidati Card -->
+        <div class="feature-card" id="candidati">
+          <div class="card-icon">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <h3 class="card-title">Per i Candidati</h3>
+          <p class="card-description">
+            Ti lasciamo scegliere il percorso professionale in base al tuo talento e alla tua specializzazione, 
+            offriamo opportunità di consulenza specialistica per accrescere giorno per giorno il valore delle tue competenze.
+          </p>
+          <button class="btn btn-outline" (click)="navigateTo('/candidati')">
+            Scopri di più <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Aziende Card -->
+        <div class="feature-card" id="aziende">
+          <div class="card-icon">
+            <i class="fas fa-building"></i>
+          </div>
+          <h3 class="card-title">Per le Aziende</h3>
+          <p class="card-description">
+            Portiamo valore alla tua azienda attraverso la selezione di sviluppatori con talento per l'informatica. 
+            Incontra i talenti che faranno crescere la tua Azienda.
+          </p>
+          <button class="btn btn-outline" (click)="navigateTo('/aziende')">
+            Scopri di più <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog/News Section -->
+  <section class="blog-section">
+    <div class="container">
+      <h2 class="section-title">Ultime Opportunità</h2>
+      <div class="blog-grid">
+        <article class="blog-card" *ngFor="let post of blogPosts">
+          <div class="blog-image">
+            <img [src]="post.image" [alt]="post.title">
+            <div class="blog-category">{{ post.category }}</div>
+          </div>
+          <div class="blog-content">
+            <h3 class="blog-title">{{ post.title }}</h3>
+            <p class="blog-excerpt">{{ post.excerpt }}</p>
+            <div class="blog-meta">
+              <span class="blog-date">{{ post.date }}</span>
+              <a href="#" class="blog-link">Leggi di più</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">Pronto a dare una svolta alla tua carriera?</h2>
+        <p class="cta-subtitle">Unisciti a noi e scopri le migliori opportunità nel settore IT</p>
+        <button class="btn btn-cta" (click)="openContactForm()">Contattaci Ora</button>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,14 +1,32 @@
-<div class="main-layout" [class.sidebar-layout]="showSidebar">
-  
-  <!-- Sidebar Component - SEMPRE VISIBILE quando showSidebar è true -->
-  <app-sidebar *ngIf="showSidebar"
-               [isOpen]="true"
-               [selectedItem]="selectedMenuItem"
-               (backToHome)="onBackToHome()">
-  </app-sidebar>
-  
-  <!-- Content Area -->
-  <main class="content-area" [class.with-sidebar]="showSidebar">
+<div class="main-layout-container">
+<app-sidebar 
+  [isOpen]="showSidebar" 
+  [selectedItem]="selectedMenuItem"
+  (closeSidebar)="showSidebar = false"
+  (backToHome)="onBackToHome()"
+  (toggleSidebar)="showSidebar = !showSidebar">
+</app-sidebar>
+
+  <div class="content-area" [class.content-shifted]="showSidebar">
     <router-outlet></router-outlet>
-  </main>
+  </div>
+
+  <div class="voice-control-bar" [ngClass]="getVoiceControlBarClasses()" [ngStyle]="getVoiceControlBarStyles()">
+    <div class="voice-control-center">
+      <button class="microphone-button" (click)="onMicrophoneClick()">
+        <img src="/assets/icons/microphone.svg" alt="Microfono" class="microphone-icon" />
+        <span class="microphone-pulse" [style.--pulse-intensity]="conversationState.speakingIntensity"></span>
+      </button>
+      <div class="voice-status-text">
+        <span *ngIf="conversationService.isSDKLoading()">Caricamento SDK...</span>
+        <span *ngIf="!conversationService.isSDKLoading()">
+          {{ getVoiceControlText() }}
+        </span>
+      </div>
+      <div class="agent-name-display">
+        {{ getCurrentAgentNameForDisplay() }}
+        <span *ngIf="conversationState.status === 'connected'" class="status-dot"></span>
+      </div>
+    </div>
+  </div>
 </div>
