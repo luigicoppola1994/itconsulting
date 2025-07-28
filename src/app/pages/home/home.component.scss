@@ -51,7 +51,7 @@ body {
   overflow: hidden;
 }
 
-/* --- Homepage Container --- */
+/* --- Homepage Container con Animazione VELOCE --- */
 .homepage-container {
   display: flex;
   align-items: center;
@@ -61,10 +61,17 @@ body {
   background: $bg-light;
   overflow: hidden;
   position: relative;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   &.sidebar-layout {
     justify-content: flex-start;
     align-items: flex-start;
+  }
+
+  // Stato di uscita - tutta la pagina scivola verso destra VELOCE
+  &.exiting {
+    transform: translateX(100vw);
+    opacity: 0;
   }
 }
 
@@ -119,7 +126,7 @@ body {
   }
 }
 
-/* --- Left Panel CENTRATO VERTICALMENTE --- */
+/* --- Left Panel CENTRATO VERTICALMENTE con Animazione VELOCE --- */
 .left-panel {
   display: flex;
   flex-direction: column;
@@ -130,16 +137,30 @@ body {
   position: relative;
   z-index: 2;
   height: 100vh; // Altezza piena per centrare correttamente
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  // Durante l'uscita, il pannello sinistro può avere un effetto aggiuntivo
+  .homepage-container.exiting & {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
 
   .logo-container {
     position: absolute;
     top: 60px; // Posizionato più in alto
     left: 8vw; // Allineato con il padding
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     
     .company-logo {
       height: 52px; // Logo leggermente più grande
       width: auto;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+    }
+
+    // Logo durante l'uscita
+    .homepage-container.exiting & {
+      opacity: 0;
+      transform: translateY(-20px);
     }
   }
 
@@ -148,6 +169,13 @@ body {
     margin: 0; // Rimosso margin-top negativo
     max-width: 600px; // Larghezza massima per leggibilità
     animation: fadeInUp 0.8s ease-out;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // Welcome section durante l'uscita
+    .homepage-container.exiting & {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
 
     .welcome-title {
       font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -253,7 +281,7 @@ body {
   }
 }
 
-/* --- Right Panel --- */
+/* --- Right Panel con Animazione VELOCE --- */
 .right-panel {
   display: flex;
   flex-direction: column;
@@ -262,6 +290,13 @@ body {
   position: relative;
   overflow: hidden;
   z-index: 2;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  // Durante l'uscita
+  .homepage-container.exiting & {
+    opacity: 0;
+    transform: translateX(30px);
+  }
 }
 
 /* --- PIRAMIDE PERFETTA - Container --- */
@@ -304,7 +339,7 @@ body {
   }
 }
 
-/* --- Avatar Item (Dimensioni UNIFORMI) --- */
+/* --- Avatar Item (Dimensioni UNIFORMI) con Animazione Click --- */
 .avatar-item {
   position: relative;
   display: flex;
@@ -313,7 +348,8 @@ body {
   cursor: pointer;
   transition: transform $transition-ease;
   
-  &:hover {
+  // Stato normale hover
+  &:hover:not(.clicked) {
     transform: translateY(-10px);
 
     .avatar-glow {
@@ -330,6 +366,33 @@ body {
     .avatar-name {
       color: $accent;
       transform: translateY(-5px);
+    }
+  }
+
+  // Stato quando viene cliccato - NUOVO
+  &.clicked {
+    transform: scale(1.15);
+    z-index: 10;
+
+    .avatar-glow {
+      opacity: 0.6;
+      transform: scale(1.5);
+      background: radial-gradient(circle, rgba($accent, 0.6), transparent 70%);
+    }
+
+    .avatar-border {
+      box-shadow: 
+        0 0 0 4px rgba($accent, 0.3),
+        0 0 30px rgba($accent, 0.4),
+        $shadow-xl;
+      transform: scale(1.1);
+      border-color: $accent;
+    }
+
+    .avatar-name {
+      color: $accent;
+      transform: translateY(-8px) scale(1.1);
+      font-weight: 700;
     }
   }
 
@@ -364,6 +427,7 @@ body {
       border-radius: 50%;
       object-fit: cover;
       filter: saturate(1.1) brightness(1.05);
+      transition: all $transition-ease;
     }
   }
 
@@ -847,5 +911,3 @@ body {
     }
   }
 }
-
-

@@ -25,9 +25,20 @@ export class HomeComponent {
     { name: 'FORMAZIONE', image: '/assets/avatars/mioavatar.png', link: 'formazione' }
   ];
 
+  isExiting = false;
+
   constructor(private router: Router) {}
 
   onAvatarClick(avatar: Avatar): void {
-    this.router.navigate([avatar.link]);
+    // Previeni click multipli
+    if (this.isExiting) return;
+
+    // Attiva l'animazione di uscita
+    this.isExiting = true;
+
+    // Aspetta che l'animazione finisca prima di navigare
+    setTimeout(() => {
+      this.router.navigate([avatar.link]);
+    }, 400); // Durata dell'animazione ridotta a 400ms
   }
 }
