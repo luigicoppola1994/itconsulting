@@ -1,28 +1,14 @@
-<div class="main-layout" 
-     [class.sidebar-layout]="showSidebar" 
-     [class.sidebar-closed]="sidebarClosed">
-
+<div class="main-layout" [class.sidebar-layout]="showSidebar">
   
-
-  <!-- Sidebar Reopen Tab -->
-  <button *ngIf="showSidebar && sidebarClosed" 
-          class="sidebar-reopen-tab" 
-          (click)="onToggleSidebar()"
-          aria-label="Riapri sidebar">
-    <span>SIDEBAR</span>
-  </button>
-
-  <!-- Sidebar Component -->
+  <!-- Sidebar Component - SEMPRE VISIBILE quando showSidebar è true -->
   <app-sidebar *ngIf="showSidebar"
-               [isOpen]="!sidebarClosed"
+               [isOpen]="true"
                [selectedItem]="selectedMenuItem"
-               (closeSidebar)="onCloseSidebar()"
-               (backToHome)="onBackToHome()"
-               (toggleSidebar)="onToggleSidebar()">
+               (backToHome)="onBackToHome()">
   </app-sidebar>
-
+  
   <!-- Content Area -->
-  <main class="content-area" [class.with-sidebar]="showSidebar && !sidebarClosed">
+  <main class="content-area" [class.with-sidebar]="showSidebar">
     <router-outlet></router-outlet>
   </main>
 </div>

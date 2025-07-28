@@ -1,1 +1,72 @@
 /* You can add global styles to this file, and also import other style files */
+/* === GLOBAL OVERFLOW PREVENTION === */
+/* Aggiungi questo al tuo styles.scss globale o in un file separato */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+
+/* === PREVENZIONE OVERFLOW PER ELEMENTI COMUNI === */
+.container,
+.row,
+.col,
+[class*="col-"] {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* === ELEMENTI CHE SPESSO CAUSANO OVERFLOW === */
+pre,
+code,
+.code-block {
+  max-width: 100%;
+  overflow-x: auto;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+table {
+  max-width: 100%;
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+img,
+video,
+iframe,
+embed,
+object {
+  max-width: 100%;
+  height: auto;
+}
+
+/* === FIX PER ELEMENTI POSITIONED === */
+.fixed,
+.absolute,
+.relative {
+  max-width: 100vw;
+}
+
+/* === DEBUG: Evidenzia elementi che causano overflow === */
+/* Decommenta queste righe solo per debugging */
+/*
+* {
+  outline: 1px solid red !important;
+}
+
+*:hover {
+  background: rgba(255, 0, 0, 0.1) !important;
+}
+*/

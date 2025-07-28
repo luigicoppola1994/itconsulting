@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 interface MenuItem {
   name: string;
@@ -15,7 +17,7 @@ interface MenuItem {
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit, OnChanges {
+export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isOpen: boolean = true;
   @Input() selectedItem: MenuItem | null = null;
   @Output() closeSidebar = new EventEmitter<void>();
@@ -23,6 +25,8 @@ export class SidebarComponent implements OnInit, OnChanges {
   @Output() toggleSidebar = new EventEmitter<void>();
 
   isEntering: boolean = false;
+  private destroy$ = new Subject<void>();
+  private hasAnimated: boolean = false; // Flag per evitare animazioni multiple
 
   menuItems: MenuItem[] = [
     { name: 'VALE', image: '/assets/avatars/mioavatar.png', link: 'vale' },
@@ -36,21 +40,37 @@ export class SidebarComponent implements OnInit, OnChanges {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Se la sidebar è aperta all'inizializzazione, attiva l'animazione
-    if (this.isOpen) {
+    // Se la sidebar è aperta all'inizializzazione e non ha mai animato, attiva l'animazione
+    if (this.isOpen && !this.hasAnimated) {
+      this.triggerEnterAnimation();
+    }
+
+    // Ascolta i cambi di route per aggiornare l'item selezionato
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event: NavigationEnd) => {
+        this.updateSelectedItem(event.url);
+      });
+  }
+
+  ngOnChanges(): void {
+    // Quando isOpen cambia da false a true E non ha mai animato, attiva l'animazione
+    if (this.isOpen && !this.isEntering && !this.hasAnimated) {
       this.triggerEnterAnimation();
     }
   }
 
-  ngOnChanges(): void {
-    // Quando isOpen cambia da false a true, attiva l'animazione
-    if (this.isOpen && !this.isEntering) {
-      this.triggerEnterAnimation();
-    }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private triggerEnterAnimation(): void {
     this.isEntering = true;
+    this.hasAnimated = true; // Segna che l'animazione è stata eseguita
     
     // Rimuovi la classe dopo che l'animazione è completata - ULTRA VELOCE
     setTimeout(() => {
@@ -58,7 +78,22 @@ export class SidebarComponent implements OnInit, OnChanges {
     }, 400); // Durata totale ridotta (0.2s slide + 0.2s items)
   }
 
+  private updateSelectedItem(url: string): void {
+    // Rimuovi lo slash iniziale se presente
+    const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+    
+    // Trova l'item corrispondente alla route corrente
+    const currentItem = this.menuItems.find(item => item.link === cleanUrl);
+    if (currentItem) {
+      this.selectedItem = currentItem;
+    }
+  }
+
   onItemClick(item: MenuItem): void {
+    // Aggiorna immediatamente l'item selezionato senza aspettare il routing
+    this.selectedItem = item;
+    
+    // Naviga senza ricaricare la sidebar
     this.router.navigate([item.link]);
   }
 
@@ -67,6 +102,7 @@ export class SidebarComponent implements OnInit, OnChanges {
   }
 
   onBackToHome(): void {
+    this.hasAnimated = false; // Reset per permettere l'animazione quando si torna alla home
     this.backToHome.emit();
   }
 

@@ -19,14 +19,14 @@ $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.06);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.05);
 $shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 10px 10px rgba(0, 0, 0, 0.04);
 
-// Transizioni VELOCI
-$transition-smooth: 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-$transition-fast: 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-$transition-bounce: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+// Transizioni ULTRA VELOCI
+$transition-smooth: 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$transition-fast: 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$transition-bounce: 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
 $sidebar-width: 280px;
 
-/* === SIDEBAR CONTAINER con ANIMAZIONE VELOCE === */
+/* === SIDEBAR CONTAINER con ANIMAZIONE VELOCE - SEMPRE APERTA === */
 .sidebar-container {
   position: fixed;
   top: 0;
@@ -59,54 +59,48 @@ $sidebar-width: 280px;
     z-index: 0;
   }
 
-  // Stato chiuso - VELOCE
-  &.sidebar-closed {
-    transform: translateX(-100%);
-    box-shadow: none;
-  }
-
-  // Animazione di entrata VELOCE - NUOVO
+  // Animazione di entrata ULTRA VELOCE - NUOVO
   &.sidebar-entering {
-    animation: slideInFromLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: slideInFromLeft 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     
-    // Anima gli elementi interni con un leggero ritardo
+    // Anima gli elementi interni con ritardi minimi
     .sidebar-header {
       opacity: 0;
-      animation: fadeInFast 0.2s ease-out 0.1s forwards;
+      animation: fadeInFast 0.1s ease-out 0.05s forwards;
     }
     
     .sidebar-divider {
       opacity: 0;
-      animation: fadeInFast 0.15s ease-out 0.15s forwards;
+      animation: fadeInFast 0.08s ease-out 0.08s forwards;
     }
     
     .back-button {
       opacity: 0;
-      transform: translateX(-20px);
-      animation: slideInItemFast 0.2s ease-out 0.2s forwards;
+      transform: translateX(-15px);
+      animation: slideInItemFast 0.12s ease-out 0.1s forwards;
     }
     
     .sidebar-item {
       opacity: 0;
-      transform: translateX(-15px);
+      transform: translateX(-10px);
       
-      // Ogni item appare in sequenza veloce
-      &:nth-child(1) { animation: slideInItemFast 0.15s ease-out 0.25s forwards; }
-      &:nth-child(2) { animation: slideInItemFast 0.15s ease-out 0.3s forwards; }
-      &:nth-child(3) { animation: slideInItemFast 0.15s ease-out 0.35s forwards; }
-      &:nth-child(4) { animation: slideInItemFast 0.15s ease-out 0.4s forwards; }
-      &:nth-child(5) { animation: slideInItemFast 0.15s ease-out 0.45s forwards; }
-      &:nth-child(6) { animation: slideInItemFast 0.15s ease-out 0.5s forwards; }
+      // Ogni item appare in sequenza ULTRA veloce
+      &:nth-child(1) { animation: slideInItemFast 0.1s ease-out 0.12s forwards; }
+      &:nth-child(2) { animation: slideInItemFast 0.1s ease-out 0.15s forwards; }
+      &:nth-child(3) { animation: slideInItemFast 0.1s ease-out 0.18s forwards; }
+      &:nth-child(4) { animation: slideInItemFast 0.1s ease-out 0.21s forwards; }
+      &:nth-child(5) { animation: slideInItemFast 0.1s ease-out 0.24s forwards; }
+      &:nth-child(6) { animation: slideInItemFast 0.1s ease-out 0.27s forwards; }
     }
     
     .sidebar-social {
       opacity: 0;
-      animation: fadeInFast 0.2s ease-out 0.55s forwards;
+      animation: fadeInFast 0.1s ease-out 0.3s forwards;
     }
     
     .sidebar-footer {
       opacity: 0;
-      animation: fadeInFast 0.15s ease-out 0.6s forwards;
+      animation: fadeInFast 0.08s ease-out 0.32s forwards;
     }
   }
 }
@@ -133,7 +127,7 @@ $sidebar-width: 280px;
 @keyframes slideInItemFast {
   from {
     opacity: 0;
-    transform: translateX(-15px);
+    transform: translateX(-10px);
   }
   to {
     opacity: 1;
@@ -565,14 +559,14 @@ $sidebar-width: 280px;
     min-height: unset;
     box-shadow: $shadow-lg;
 
-    // Su mobile scivola dall'alto invece che da sinistra
+    // Su mobile scivola dall'alto invece che da sinistra - ULTRA VELOCE
     &.sidebar-closed {
       transform: translateY(-100%);
       box-shadow: none;
     }
 
     &.sidebar-entering {
-      animation: slideInFromTop 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      animation: slideInFromTop 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
   }
 

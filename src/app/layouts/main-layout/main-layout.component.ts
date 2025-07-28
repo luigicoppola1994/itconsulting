@@ -19,7 +19,6 @@ interface MenuItem {
 })
 export class MainLayoutComponent implements OnInit {
   showSidebar: boolean = false;
-  sidebarClosed: boolean = false;
   selectedMenuItem: MenuItem | null = null;
 
   menuItems: MenuItem[] = [
@@ -49,7 +48,6 @@ export class MainLayoutComponent implements OnInit {
     if (currentUrl === '/' || currentUrl === '/home') {
       this.showSidebar = false;
       this.selectedMenuItem = null;
-      this.sidebarClosed = false;
     } else {
       const routePath = currentUrl.replace('/', '');
       const matchingItem = this.menuItems.find(item => item.link === routePath);
@@ -57,23 +55,18 @@ export class MainLayoutComponent implements OnInit {
       if (matchingItem) {
         this.showSidebar = true;
         this.selectedMenuItem = matchingItem;
-        this.sidebarClosed = false;
       }
     }
   }
 
-  onCloseSidebar(): void {
-    this.sidebarClosed = !this.sidebarClosed;
-  }
-
+  // Metodo semplificato - naviga solo alla home
   onBackToHome(): void {
     this.showSidebar = false;
     this.selectedMenuItem = null;
-    this.sidebarClosed = false;
     this.router.navigate(['/']);
   }
 
-  onToggleSidebar(): void {
-    this.sidebarClosed = !this.sidebarClosed;
-  }
+  // Metodo rimosso - la sidebar non si chiude più
+  // onCloseSidebar(): void { ... }
+  // onToggleSidebar(): void { ... }
 }
