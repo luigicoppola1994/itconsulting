@@ -1,59 +1,91 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
-import { HomeComponent } from './pages/home/home.component'; // Importa HomeComponent direttamente
+import { HomeComponent } from './pages/home/home.component';
 
 export const routes: Routes = [
-  // Rotta per la Home (senza MainLayoutComponent)
+  // Rotta per la Home (componente standalone)
   {
-    path: '', // Questo intercetterà sia '/' che '/home' se vuoi che sia la stessa pagina
-    component: HomeComponent
+    path: '',
+    component: HomeComponent,
+    pathMatch: 'full' // IMPORTANTE: specifica che deve matchare esattamente il path vuoto
   },
+  
+  // Rotta esplicita per /home (opzionale, se vuoi che /home porti alla stessa pagina)
   {
-    path: 'home', // Puoi avere anche una rotta esplicita per '/home' se serve
+    path: 'home',
     component: HomeComponent
   },
 
-  // Rotte che usano MainLayoutComponent come layout principale
+  // Rotte degli agenti che usano MainLayoutComponent
   {
-    path: '', // Questa è una rotta 'dummy' che serve solo a raggruppare le child routes
+    path: 'vale',
     component: MainLayoutComponent,
     children: [
-      // Le rotte child non devono avere un path vuoto se la parent path è vuota e non vuoi che si sovrapponga
-      // {
-      //   path: '', // Rimuovi o commenta questa riga se hai già la Home di primo livello
-      //   loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
-      // },
-      // {
-      //   path: 'home', // Rimuovi o commenta questa riga
-      //   loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
-      // },
       {
-        path: 'chi-siamo',
-        loadComponent: () => import('./pages/chi-siamo/chi-siamo.component').then(m => m.ChiSiamoComponent)
-      },
-      {
-        path: 'vale',
+        path: '',
         loadComponent: () => import('./pages/vale/vale.component').then(m => m.ValeComponent)
-      },
+      }
+    ]
+  },
+  
+  {
+    path: 'chi-siamo',
+    component: MainLayoutComponent,
+    children: [
       {
-        path: 'contatti',
+        path: '',
+        loadComponent: () => import('./pages/chi-siamo/chi-siamo.component').then(m => m.ChiSiamoComponent)
+      }
+    ]
+  },
+  
+  {
+    path: 'contatti',
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: '',
         loadComponent: () => import('./pages/contatti/contatti.component').then(m => m.ContattiComponent)
-      },
+      }
+    ]
+  },
+  
+  {
+    path: 'prodotti',
+    component: MainLayoutComponent,
+    children: [
       {
-        path: 'prodotti',
+        path: '',
         loadComponent: () => import('./pages/prodotti/prodotti.component').then(m => m.ProdottiComponent)
-      },
+      }
+    ]
+  },
+  
+  {
+    path: 'consulenza',
+    component: MainLayoutComponent,
+    children: [
       {
-        path: 'consulenza',
+        path: '',
         loadComponent: () => import('./pages/consulenza/consulenza.component').then(m => m.ConsulenzaComponent)
-      },
+      }
+    ]
+  },
+  
+  {
+    path: 'formazione',
+    component: MainLayoutComponent,
+    children: [
       {
-        path: 'formazione',
+        path: '',
         loadComponent: () => import('./pages/formazione/formazione.component').then(m => m.FormazioneComponent)
       }
     ]
   },
 
-  // Rotta wildcard per gestire percorsi non trovati, reindirizza alla Home
-  { path: '**', redirectTo: '' }
+  // Rotta wildcard per gestire percorsi non trovati
+  { 
+    path: '**', 
+    redirectTo: '' 
+  }
 ];
