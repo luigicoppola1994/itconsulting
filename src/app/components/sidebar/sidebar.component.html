@@ -30,31 +30,53 @@
       <div *ngFor="let item of menuItems; let i = index"
            class="sidebar-item"
            [class.active]="selectedItem?.link === item.link"
-           (click)="onItemClick(item)"
-           role="menuitem" 
-           tabindex="0"
-           [attr.aria-label]="'Naviga verso ' + item.name">
+           role="menuitem"
+           [attr.aria-label]="'Opzioni per ' + item.name">
         
-        <!-- Avatar dinamico -->
-        <div class="item-avatar">
-          <div class="avatar-circle">
-            <!-- Se l'item ha un avatar, mostralo -->
-            <img *ngIf="item.image" 
-                 [src]="item.image" 
-                 [alt]="'Avatar di ' + item.name"
-                 class="avatar-image">
-            <!-- Altrimenti mostra l'icona di default -->
-            <svg *ngIf="!item.image" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+        <!-- Area cliccabile per navigazione (avatar + nome) -->
+        <div class="item-navigation-area"
+             (click)="onItemClick(item)"
+             tabindex="0"
+             [attr.aria-label]="'Naviga verso ' + item.name"
+             role="button">
+          
+          <!-- Avatar -->
+          <div class="item-avatar">
+            <div class="avatar-circle">
+              <img *ngIf="item.image" 
+                   [src]="item.image" 
+                   [alt]="'Avatar di ' + item.name"
+                   class="avatar-image">
+              <svg *ngIf="!item.image" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Nome -->
+          <div class="item-content">
+            <h3 class="item-name">{{ item.name }}</h3>
+            <div class="item-indicator"></div>
           </div>
         </div>
-        
-        <!-- Item content -->
-        <div class="item-content">
-          <h3 class="item-name">{{ item.name }}</h3>
-          <div class="item-indicator"></div>
+
+        <!-- Area cliccabile per microfono (azione vocale) -->
+        <div class="item-voice-area"
+             (click)="onVoiceClick(item, $event)"
+             tabindex="0"
+             [attr.aria-label]="'Avvia conversazione vocale con ' + item.name"
+             role="button">
+          
+          <!-- Icona microfono -->
+          <div class="voice-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </div>
         </div>
         
         <!-- Hover effect overlay -->

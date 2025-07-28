@@ -1,32 +1,30 @@
 /* === VARIABILI === */
-$primary: #456491;           // Blu principale
-$primary-dark: #1E293B;      // Blu scuro
-$primary-light: #64748B;     // Blu chiaro
-$primary-lighter: #94A3B8;   // Blu molto chiaro
-$bg-light: #F8FAFC;          // Grigio chiarissimo
-$surface-card: #FFFFFF;      // Bianco
-$text-dark: #1e293b;         // Testo scuro
-$text-medium: #475569;       // Testo medio
-$text-light: #E2E8F0;        // Testo chiaro
-$text-white: #ffffff;        // Bianco
-$gray-light: #F1F5F9;        // Grigio leggero
-$gray-medium: #CBD5E1;       // Grigio medio
-$gray-border: #E2E8F0;       // Grigio per bordi
+$primary: #456491;           
+$primary-dark: #1E293B;      
+$primary-light: #64748B;     
+$primary-lighter: #94A3B8;   
+$bg-light: #F8FAFC;          
+$surface-card: #FFFFFF;      
+$text-dark: #1e293b;         
+$text-medium: #475569;       
+$text-light: #E2E8F0;        
+$text-white: #ffffff;        
+$gray-light: #F1F5F9;        
+$gray-medium: #CBD5E1;       
+$gray-border: #E2E8F0;       
 
-// Ombre moderne e sottili
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.06);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.05);
 $shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 10px 10px rgba(0, 0, 0, 0.04);
 
-// Transizioni ULTRA VELOCI
 $transition-smooth: 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 $transition-fast: 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 $transition-bounce: 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
 $sidebar-width: 280px;
 
-/* === SIDEBAR CONTAINER con ANIMAZIONE VELOCE - SEMPRE APERTA === */
+/* === SIDEBAR CONTAINER === */
 .sidebar-container {
   position: fixed;
   top: 0;
@@ -43,7 +41,6 @@ $sidebar-width: 280px;
   flex-direction: column;
   overflow: hidden;
 
-  // Pattern sottile di sfondo
   &::before {
     content: '';
     position: absolute;
@@ -59,11 +56,9 @@ $sidebar-width: 280px;
     z-index: 0;
   }
 
-  // Animazione di entrata ULTRA VELOCE - NUOVO
   &.sidebar-entering {
     animation: slideInFromLeft 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     
-    // Anima gli elementi interni con ritardi minimi
     .sidebar-header {
       opacity: 0;
       animation: fadeInFast 0.1s ease-out 0.05s forwards;
@@ -84,7 +79,6 @@ $sidebar-width: 280px;
       opacity: 0;
       transform: translateX(-10px);
       
-      // Ogni item appare in sequenza ULTRA veloce
       &:nth-child(1) { animation: slideInItemFast 0.1s ease-out 0.12s forwards; }
       &:nth-child(2) { animation: slideInItemFast 0.1s ease-out 0.15s forwards; }
       &:nth-child(3) { animation: slideInItemFast 0.1s ease-out 0.18s forwards; }
@@ -105,34 +99,20 @@ $sidebar-width: 280px;
   }
 }
 
-/* === KEYFRAMES per animazioni VELOCI === */
+/* === KEYFRAMES === */
 @keyframes slideInFromLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
 
 @keyframes fadeInFast {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideInItemFast {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 /* === HEADER === */
@@ -161,7 +141,6 @@ $sidebar-width: 280px;
   .company-logo {
     height: 32px;
     width: auto;
-    // Rende il logo bianco usando filtri CSS
     filter: brightness(0) invert(1);
     transition: all $transition-fast;
 
@@ -171,45 +150,12 @@ $sidebar-width: 280px;
   }
 }
 
-.sidebar-close-btn {
-  background: none;
-  border: none;
-  color: $text-white;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  transition: all $transition-fast;
-  opacity: 0.8;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    opacity: 1;
-    transform: rotate(90deg) scale(1.05);
-  }
-
-  &:active {
-    transform: rotate(90deg) scale(0.95);
-  }
-
-  svg {
-    width: 16px;
-    height: 16px;
-    transition: inherit;
-  }
-}
-
 /* === DIVIDER === */
 .sidebar-divider {
   height: 1px;
   background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.2) 20%, 
-    rgba(255, 255, 255, 0.3) 50%, 
-    rgba(255, 255, 255, 0.2) 80%, 
+    transparent 0%, rgba(255, 255, 255, 0.2) 20%, 
+    rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.2) 80%, 
     transparent 100%);
   margin: 0 1.5rem;
   position: relative;
@@ -255,10 +201,6 @@ $sidebar-width: 280px;
       color: $text-white;
     }
   }
-
-  &:active {
-    transform: translateY(0);
-  }
 }
 
 .back-button-icon {
@@ -289,9 +231,7 @@ $sidebar-width: 280px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0; // Importante per il flex shrinking
-  
-  // Rimuovi overflow per eliminare scroll
+  min-height: 0;
   overflow: visible;
 }
 
@@ -301,23 +241,20 @@ $sidebar-width: 280px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 0.25rem; // Riduci lo spazio tra gli elementi
+  gap: 0.25rem;
 }
 
-/* === SIDEBAR ITEMS === */
+/* === SIDEBAR ITEMS con AZIONI SEPARATE === */
 .sidebar-item {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.625rem;
-  cursor: pointer;
   border-radius: 8px;
   transition: all $transition-fast;
   overflow: hidden;
-  flex-shrink: 0; // Impedisce che gli elementi si restringano
+  flex-shrink: 0;
+  background: transparent;
 
-  // Hover overlay
   .item-hover-overlay {
     position: absolute;
     top: 0;
@@ -328,16 +265,56 @@ $sidebar-width: 280px;
     opacity: 0;
     transition: opacity $transition-fast;
     border-radius: inherit;
+    pointer-events: none;
   }
+
+  &:hover .item-hover-overlay {
+    opacity: 1;
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .item-hover-overlay {
+      opacity: 0;
+    }
+
+    .item-navigation-area .avatar-circle {
+      background: rgba(255, 255, 255, 0.25);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: $shadow-sm;
+    }
+
+    .item-navigation-area .item-name {
+      color: $text-white;
+      font-weight: 700;
+    }
+
+    .item-navigation-area .item-indicator {
+      width: 18px;
+      opacity: 1;
+      background: $text-white;
+    }
+  }
+}
+
+/* === AREA NAVIGAZIONE (Avatar + Nome) === */
+.item-navigation-area {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.625rem;
+  cursor: pointer;
+  flex: 1;
+  transition: all $transition-fast;
 
   &:hover {
     transform: translateX(3px);
 
-    .item-hover-overlay {
-      opacity: 1;
-    }
-
-    .item-avatar .avatar-circle {
+    .avatar-circle {
       background: rgba(255, 255, 255, 0.2);
       transform: scale(1.05);
       box-shadow: $shadow-sm;
@@ -354,30 +331,60 @@ $sidebar-width: 280px;
     }
   }
 
-  &.active {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+  }
+}
 
-    .item-hover-overlay {
-      opacity: 0;
-    }
+/* === AREA VOCALE (Microfono) === */
+.item-voice-area {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all $transition-fast;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 
-    .item-avatar .avatar-circle {
-      background: rgba(255, 255, 255, 0.25);
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      box-shadow: $shadow-sm;
-    }
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+    box-shadow: $shadow-sm;
 
-    .item-name {
+    .voice-icon svg {
       color: $text-white;
-      font-weight: 700;
+      transform: scale(1.1);
     }
+  }
 
-    .item-indicator {
-      width: 18px;
-      opacity: 1;
-      background: $text-white;
-    }
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+  }
+}
+
+.voice-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  svg {
+    width: 16px;
+    height: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all $transition-fast;
   }
 }
 
@@ -398,19 +405,17 @@ $sidebar-width: 280px;
   transition: all $transition-fast;
   border: 1px solid rgba(255, 255, 255, 0.15);
   flex-shrink: 0;
-  overflow: hidden; // Per contenere l'immagine
+  overflow: hidden;
 
-  // Immagine avatar - STILE AGGIORNATO
   .avatar-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
     transition: all $transition-fast;
-    border: none; // Rimuove eventuali bordi predefiniti
+    border: none;
   }
 
-  // Icona SVG di fallback
   svg {
     width: 16px;
     height: 16px;
@@ -500,7 +505,6 @@ $sidebar-width: 280px;
     transform: translateY(0) scale(1);
   }
 
-  // Hover specifici per colore brand (opzionali)
   &.instagram:hover {
     background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     border-color: transparent;
@@ -543,12 +547,11 @@ $sidebar-width: 280px;
 }
 
 /* === FOCUS STATES === */
-.sidebar-item:focus,
-.sidebar-close-btn:focus,
+.item-navigation-area:focus,
+.item-voice-area:focus,
 .back-button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-  transform: translateX(2px);
 }
 
 /* === RESPONSIVE DESIGN === */
@@ -559,7 +562,6 @@ $sidebar-width: 280px;
     min-height: unset;
     box-shadow: $shadow-lg;
 
-    // Su mobile scivola dall'alto invece che da sinistra - ULTRA VELOCE
     &.sidebar-closed {
       transform: translateY(-100%);
       box-shadow: none;
@@ -578,16 +580,6 @@ $sidebar-width: 280px;
     height: 28px;
   }
 
-  .sidebar-close-btn {
-    width: 28px;
-    height: 28px;
-
-    svg {
-      width: 14px;
-      height: 14px;
-    }
-  }
-
   .back-button {
     width: calc(100% - 2rem);
     margin: 1rem 1rem 1.5rem;
@@ -601,8 +593,21 @@ $sidebar-width: 280px;
   }
 
   .sidebar-item {
-    padding: 0.4rem 0.5rem;
-    gap: 0.6rem;
+    .item-navigation-area {
+      padding: 0.4rem 0.5rem;
+      gap: 0.6rem;
+    }
+
+    .item-voice-area {
+      width: 32px;
+      height: 32px;
+      margin-right: 0.4rem;
+
+      .voice-icon svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
 
     .avatar-circle {
       width: 28px;
@@ -650,7 +655,6 @@ $sidebar-width: 280px;
   }
 }
 
-// Keyframe per mobile (dall'alto)
 @keyframes slideInFromTop {
   from {
     transform: translateY(-100%);
@@ -675,7 +679,19 @@ $sidebar-width: 280px;
   }
 
   .sidebar-item {
-    padding: 0.35rem 0.4rem;
+    .item-navigation-area {
+      padding: 0.35rem 0.4rem;
+    }
+
+    .item-voice-area {
+      width: 28px;
+      height: 28px;
+
+      .voice-icon svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
 
     .avatar-circle {
       width: 26px;
@@ -722,4 +738,3 @@ $sidebar-width: 280px;
     }
   }
 }
-

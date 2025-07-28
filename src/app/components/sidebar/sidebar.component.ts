@@ -20,13 +20,14 @@ interface MenuItem {
 export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isOpen: boolean = true;
   @Input() selectedItem: MenuItem | null = null;
+  @Input() shouldAnimate: boolean = false;
   @Output() closeSidebar = new EventEmitter<void>();
   @Output() backToHome = new EventEmitter<void>();
   @Output() toggleSidebar = new EventEmitter<void>();
+  @Output() voiceAction = new EventEmitter<MenuItem>(); // NUOVO OUTPUT per azioni vocali
   
   isEntering: boolean = false;
   private destroy$ = new Subject<void>();
-  private hasAnimated: boolean = false;
   
   menuItems: MenuItem[] = [
     { name: 'VALE', image: '/assets/avatars/mioavatar.png', link: 'vale' },
@@ -40,20 +41,26 @@ export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Anima solo la prima volta che la sidebar si apre
-    if (this.isOpen && !this.hasAnimated) {
+    if (this.isOpen && this.shouldAnimate) {
       this.triggerEnterAnimation();
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Anima solo quando isOpen cambia da false a true, non per altri cambiamenti
-    if (changes['isOpen'] && changes['isOpen'].currentValue && !changes['isOpen'].previousValue && !this.hasAnimated) {
+    const isOpenChanged = changes['isOpen'];
+    const shouldAnimateChanged = changes['shouldAnimate'];
+    
+    console.log('🎬 Sidebar ngOnChanges:', {
+      isOpen: this.isOpen,
+      shouldAnimate: this.shouldAnimate,
+      isOpenChanged: !!isOpenChanged,
+      shouldAnimateChanged: !!shouldAnimateChanged
+    });
+    
+    if ((isOpenChanged && this.isOpen && this.shouldAnimate) || 
+        (shouldAnimateChanged && this.shouldAnimate && this.isOpen)) {
       this.triggerEnterAnimation();
     }
-    
-    // Se selectedItem cambia, NON rianimare la sidebar
-    // L'animazione dovrebbe avvenire solo quando la sidebar si apre/chiude
   }
 
   ngOnDestroy(): void {
@@ -62,16 +69,28 @@ export class SidebarComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private triggerEnterAnimation(): void {
+    console.log('🎭 Avvio animazione sidebar');
     this.isEntering = true;
-    this.hasAnimated = true;
     
     setTimeout(() => {
       this.isEntering = false;
+      console.log('🎭 Fine animazione sidebar');
     }, 400);
   }
 
+  // NAVIGAZIONE: Click sull'avatar/nome
   onItemClick(item: MenuItem): void {
+    console.log('🔄 Navigazione verso:', item.name, item.link);
     this.router.navigate([item.link]);
+  }
+
+  // AZIONE VOCALE: Click sul microfono
+  onVoiceClick(item: MenuItem, event: Event): void {
+    // Previeni la propagazione per evitare che scatti anche onItemClick
+    event.stopPropagation();
+    
+    console.log('🎤 Azione vocale per:', item.name);
+    this.voiceAction.emit(item);
   }
 
   onCloseSidebar(): void {

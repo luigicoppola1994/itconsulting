@@ -2,9 +2,11 @@
 <app-sidebar 
   [isOpen]="showSidebar" 
   [selectedItem]="selectedMenuItem"
+  [shouldAnimate]="shouldAnimateSidebar"
   (closeSidebar)="showSidebar = false"
   (backToHome)="onBackToHome()"
-  (toggleSidebar)="showSidebar = !showSidebar">
+  (toggleSidebar)="showSidebar = !showSidebar"
+  (voiceAction)="onSidebarVoiceAction($event)">
 </app-sidebar>
 
   <div class="content-area" [class.content-shifted]="showSidebar">

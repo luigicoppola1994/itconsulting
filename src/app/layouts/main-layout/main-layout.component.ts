@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
-import { ConversationService, ConversationState } from '../../services/conversation.service'; // Importa ConversationState da qui
+import { ConversationService, ConversationState } from '../../services/conversation.service';
 
 interface MenuItem {
   name: string;
@@ -21,6 +21,7 @@ interface MenuItem {
 export class MainLayoutComponent implements OnInit, OnDestroy {
   showSidebar: boolean = false;
   selectedMenuItem: MenuItem | null = null;
+  shouldAnimateSidebar: boolean = false;
   
   conversationState: ConversationState = {
     status: 'disconnected',
@@ -38,6 +39,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   };
 
   private destroy$ = new Subject<void>();
+  private previousUrl: string = '';
 
   menuItems: MenuItem[] = [
     { name: 'CHI SIAMO', image: '/assets/avatars/mioavatar.png', link: 'chi-siamo' },
@@ -51,7 +53,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     public conversationService: ConversationService
-  ) {}
+  ) {
+    this.previousUrl = this.router.url;
+  }
 
   ngOnInit(): void {
     this.checkCurrentRoute();
@@ -71,7 +75,19 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
     ).subscribe((event: NavigationEnd) => {
+      const isComingFromHome = this.previousUrl === '/' || this.previousUrl === '/home' || this.previousUrl === '';
+      const isGoingToSidebarPage = this.menuItems.some(item => event.urlAfterRedirects.includes(item.link));
+      
+      this.shouldAnimateSidebar = isComingFromHome && isGoingToSidebarPage;
+      
+      console.log('🔄 Navigazione:', {
+        from: this.previousUrl,
+        to: event.urlAfterRedirects,
+        shouldAnimate: this.shouldAnimateSidebar
+      });
+      
       this.checkCurrentRoute(event.urlAfterRedirects);
+      this.previousUrl = event.urlAfterRedirects;
     });
   }
 
@@ -106,9 +122,46 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   onBackToHome(): void {
+    this.shouldAnimateSidebar = false;
     this.router.navigate(['/']);
   }
 
+  // NUOVA FUNZIONE: Gestisce l'azione vocale dalla sidebar
+  async onSidebarVoiceAction(item: MenuItem): Promise<void> {
+    console.log('🎤 Azione vocale dalla sidebar per:', item.name);
+    
+    const currentState = this.conversationService.getCurrentState();
+    const targetAgentId = item.link;
+
+    if (currentState.status === 'disconnected') {
+      try {
+        console.log(`🚀 Avvio conversazione con agente: ${targetAgentId}`);
+        await this.conversationService.startConversation(targetAgentId);
+      } catch (error) {
+        console.error('Errore nell\'avvio della conversazione vocale:', error);
+      }
+    } else if (currentState.status === 'connected') {
+      // Se è già connesso con lo stesso agente, termina la conversazione
+      if (currentState.currentAgent?.name === item.name) {
+        try {
+          console.log('🔚 Termina conversazione corrente');
+          await this.conversationService.endConversation();
+        } catch (error) {
+          console.error('Errore nella terminazione della conversazione:', error);
+        }
+      } else {
+        // Se è connesso con un agente diverso, cambia agente
+        try {
+          console.log(`🔄 Cambio agente da ${currentState.currentAgent?.name} a ${item.name}`);
+          await this.conversationService.setActiveAgentByRoute(targetAgentId);
+        } catch (error) {
+          console.error('Errore nel cambio agente:', error);
+        }
+      }
+    }
+  }
+
+  // ESISTENTE: Gestisce il microfono principale (voice control bar)
   async onMicrophoneClick(): Promise<void> {
     const currentState = this.conversationService.getCurrentState();
     let targetAgentId: string | null = null;
