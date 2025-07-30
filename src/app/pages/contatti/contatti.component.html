@@ -1,6 +1,399 @@
-<div class="contact-page-container">
-  <section class="contact-header">
-    <h1>Contattaci</h1>
-    <p>Saremo lieti di rispondere a tutte le tue domande.</p>
-  </section>
-  </div>
+<!-- contatti.component.html -->
+<div class="contatti-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="page-title">CONTATTI</h1>
+                <p class="hero-subtitle">Siamo qui per supportarti in ogni fase del tuo progetto tecnologico</p>
+                <div class="hero-cta">
+                    <button class="btn-primary" (click)="scrollToForm()">
+                        <i class="fas fa-envelope"></i>
+                        Scrivici Ora
+                    </button>
+                    <button class="btn-secondary" (click)="scrollToOffices()">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Le Nostre Sedi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Info Section -->
+    <section class="contact-info-section" id="offices">
+        <div class="container">
+            <div class="section-header">
+                <h2>I Nostri Uffici</h2>
+                <div class="header-line"></div>
+                <p class="section-description">
+                    Tre sedi strategiche per essere sempre vicini ai nostri clienti
+                </p>
+            </div>
+
+            <div class="offices-grid">
+                <!-- Napoli HQ -->
+                <div class="office-card headquarters">
+                    <div class="office-header">
+                        <div class="office-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="office-info">
+                            <h3>Sede Principale - Napoli</h3>
+                            <span class="office-badge">Headquarters</span>
+                        </div>
+                    </div>
+                    <div class="office-details">
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Indirizzo</strong>
+                                <p>Centro Direzionale di Napoli<br>Torre G3 - 24° Piano<br>80143 Napoli (NA)</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong>Telefono</strong>
+                                <p>+39 081 123 4567</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <strong>Email</strong>
+                                <p>napoliATitconsultingsrl.it</p>
+                            </div>
+                        </div>
+                        <div class="office-services">
+                            <span class="service-tag">R&S Lab</span>
+                            <span class="service-tag">Formazione</span>
+                            <span class="service-tag">Recruiting</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Roma -->
+                <div class="office-card">
+                    <div class="office-header">
+                        <div class="office-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="office-info">
+                            <h3>Sede Roma</h3>
+                            <span class="office-badge">Operativa</span>
+                        </div>
+                    </div>
+                    <div class="office-details">
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Indirizzo</strong>
+                                <p>Via Roma, 123<br>00100 Roma (RM)</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong>Telefono</strong>
+                                <p>+39 06 123 4567</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <strong>Email</strong>
+                                <p>romaATitconsultingsrl.it</p>
+                            </div>
+                        </div>
+                        <div class="office-services">
+                            <span class="service-tag">Recruiting</span>
+                            <span class="service-tag">Colloqui</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Milano -->
+                <div class="office-card">
+                    <div class="office-header">
+                        <div class="office-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="office-info">
+                            <h3>Sede Milano</h3>
+                            <span class="office-badge">Operativa</span>
+                        </div>
+                    </div>
+                    <div class="office-details">
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Indirizzo</strong>
+                                <p>Via Milano, 456<br>20100 Milano (MI)</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong>Telefono</strong>
+                                <p>+39 02 123 4567</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <strong>Email</strong>
+                                <p>milanoATitconsultingsrl.it</p>
+                            </div>
+                        </div>
+                        <div class="office-services">
+                            <span class="service-tag">Recruiting</span>
+                            <span class="service-tag">Colloqui</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="contact-form-section" id="contact-form">
+        <div class="container">
+            <div class="form-content-grid">
+                <!-- Left: Form -->
+                <div class="form-column">
+                    <div class="form-header">
+                        <h2>Inviaci un Messaggio</h2>
+                        <p>Compila il form per ricevere una consulenza personalizzata</p>
+                    </div>
+
+                    <form class="contact-form" (ngSubmit)="onSubmit()" #contactFormRef="ngForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Nome e Cognome *</label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name"
+                                    [(ngModel)]="contactForm.name"
+                                    required
+                                    #nameField="ngModel"
+                                    class="form-control"
+                                    placeholder="Il tuo nome completo">
+                                <div class="error-message" *ngIf="nameField.invalid && nameField.touched">
+                                    Il nome è obbligatorio
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Telefono</label>
+                                <input 
+                                    type="tel" 
+                                    id="phone" 
+                                    name="phone"
+                                    [(ngModel)]="contactForm.phone"
+                                    class="form-control"
+                                    placeholder="+39 123 456 7890">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email"
+                                    [(ngModel)]="contactForm.email"
+                                    required
+                                    email
+                                    #emailField="ngModel"
+                                    class="form-control"
+                                    placeholder="tua@email.com">
+                                <div class="error-message" *ngIf="emailField.invalid && emailField.touched">
+                                    <span *ngIf="emailField.errors?.['required']">L'email è obbligatoria</span>
+                                    <span *ngIf="emailField.errors?.['email']">Inserisci un'email valida</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="company">Azienda</label>
+                                <input 
+                                    type="text" 
+                                    id="company" 
+                                    name="company"
+                                    [(ngModel)]="contactForm.company"
+                                    class="form-control"
+                                    placeholder="Nome della tua azienda">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Oggetto *</label>
+                            <select 
+                                id="subject" 
+                                name="subject"
+                                [(ngModel)]="contactForm.subject"
+                                required
+                                #subjectField="ngModel"
+                                class="form-control">
+                                <option value="">Seleziona l'oggetto della richiesta</option>
+                                <option value="consulenza">Richiesta Consulenza</option>
+                                <option value="recruiting">Servizi di Recruiting</option>
+                                <option value="formazione">Formazione IT</option>
+                                <option value="sviluppo">Sviluppo Software</option>
+                                <option value="partnership">Partnership</option>
+                                <option value="lavoro">Opportunità di Lavoro</option>
+                                <option value="altro">Altro</option>
+                            </select>
+                            <div class="error-message" *ngIf="subjectField.invalid && subjectField.touched">
+                                Seleziona un oggetto
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Messaggio *</label>
+                            <textarea 
+                                id="message" 
+                                name="message"
+                                [(ngModel)]="contactForm.message"
+                                required
+                                #messageField="ngModel"
+                                class="form-control"
+                                rows="6"
+                                placeholder="Descrivi la tua richiesta o le tue esigenze..."></textarea>
+                            <div class="error-message" *ngIf="messageField.invalid && messageField.touched">
+                                Il messaggio è obbligatorio
+                            </div>
+                        </div>
+
+                        <div class="form-group privacy-group">
+                            <label class="checkbox-label">
+                                <input 
+                                    type="checkbox" 
+                                    name="privacy"
+                                    [(ngModel)]="contactForm.privacy"
+                                    required
+                                    #privacyField="ngModel">
+                                <span class="checkmark"></span>
+                                Accetto il trattamento dei dati personali secondo la 
+                                <a href="#" class="privacy-link">Privacy Policy</a>
+                            </label>
+                            <div class="error-message" *ngIf="privacyField.invalid && privacyField.touched">
+                                È necessario accettare la privacy policy
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button 
+                                type="submit" 
+                                class="btn-submit"
+                                [disabled]="!contactFormRef.form.valid || isSubmitting">
+                                <i class="fas fa-paper-plane" *ngIf="!isSubmitting"></i>
+                                <i class="fas fa-spinner fa-spin" *ngIf="isSubmitting"></i>
+                                {{ isSubmitting ? 'Invio in corso...' : 'Invia Messaggio' }}
+                            </button>
+                            <button 
+                                type="button" 
+                                class="btn-reset"
+                                (click)="resetForm()">
+                                Cancella
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right: Contact Info -->
+                <div class="info-column">
+                    <div class="contact-info-card">
+                        <h3>Informazioni di Contatto</h3>
+                        
+                        <div class="contact-methods">
+                            <div class="contact-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="method-info">
+                                    <h4>Chiamaci</h4>
+                                    <p>+39 335 525 06 64</p>
+                                    <span>Lun-Ven: 9:00-18:00</span>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="method-info">
+                                    <h4>Scrivici</h4>
+                                    <p>infoATitconsultingsrl.it</p>
+                                    <span>Risposta entro 24h</span>
+                                </div>
+                            </div>
+
+                            <div class="contact-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="method-info">
+                                    <h4>Vieni a trovarci</h4>
+                                    <p>Centro Direzionale di Napoli<br>Torre G3 - 24° Piano</p>
+                                    <span>Su appuntamento</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="response-time">
+                            <div class="response-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="response-text">
+                                <h4>Tempo di Risposta</h4>
+                                <p>Ti rispondiamo entro <strong>24 ore</strong> lavorative</p>
+                            </div>
+                        </div>
+
+                        <div class="social-links">
+                            <h4>Seguici sui Social</h4>
+                            <div class="social-buttons">
+                                <a href="#" class="social-btn linkedin">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="social-btn facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-btn twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-btn instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Domande Frequenti</h2>
+                <div class="header-line"></div>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.active]="faq.isOpen">
+                    <div class="faq-question" (click)="toggleFaq(i)">
+                        <h4>{{ faq.question }}</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer" *ngIf="faq.isOpen">
+                        <p>{{ faq.answer }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
