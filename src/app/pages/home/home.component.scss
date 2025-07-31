@@ -1215,6 +1215,17 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+@keyframes arrow-pulse {
+  0%, 100% { 
+    transform: translateX(0);
+    opacity: 0.7;
+  }
+  50% { 
+    transform: translateX(8px);
+    opacity: 1;
+  }
+}
+
 // Animazioni esistenti
 @keyframes fadeInUp {
   from {
