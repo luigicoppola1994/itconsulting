@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-prodotti',
@@ -8,4 +9,13 @@ import { Component } from '@angular/core';
 })
 export class ProdottiComponent {
 
+  constructor(private router: Router) {}
+
+  onContactClick(): void {
+    this.router.navigate(['/contatti']);
+  }
+
+  onConsultingClick(): void {
+    this.router.navigate(['/consulenza']);
+  }
 }

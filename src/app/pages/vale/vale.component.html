@@ -1,0 +1,99 @@
+<div class="vale-container">
+  <div class="header">
+    <h1>🎤 Ricerca Vocale Lavoro</h1>
+    <p class="subtitle">Parla con l'AI per cercare offerte di lavoro</p>
+  </div>
+
+  <!-- Status
+  <div class="status-section" *ngIf="conversationState.error">
+    <div class="status-message status-error">
+      {{ conversationState.error }}
+    </div>
+  </div>-->
+
+  <!-- Pulsante principale per avviare conversazione 
+  <div class="conversation-controls">
+    <button 
+      *ngIf="conversationState.status === 'disconnected'"
+      (click)="startConversation()" 
+      class="btn btn-conversation btn-large">
+      🗣️ Inizia Conversazione con VALE
+    </button>
+    
+    <button 
+      *ngIf="conversationState.status === 'connecting'"
+      disabled
+      class="btn btn-conversation btn-large connecting">
+      ⏳ Connessione in corso...
+    </button>
+    
+    <button 
+      *ngIf="conversationState.status === 'connected'"
+      (click)="stopConversation()" 
+      class="btn btn-stop btn-large"
+      [class.speaking]="conversationState.isAgentSpeaking"
+      [class.listening]="conversationState.isUserSpeaking">
+      <span *ngIf="conversationState.isAgentSpeaking">🗣️ VALE sta parlando...</span>
+      <span *ngIf="conversationState.isUserSpeaking">🎤 Ti sto ascoltando...</span>
+      <span *ngIf="!conversationState.isAgentSpeaking && !conversationState.isUserSpeaking">⏹️ Termina Conversazione</span>
+    </button>
+  </div>-->
+
+  <!-- Risultati - Offerte di Lavoro -->
+  <div *ngIf="jobOffers.length > 0" class="results-section">
+    <h3>Offerte di Lavoro Trovate ({{ jobOffers.length }})</h3>
+    <div class="job-list">
+      <div 
+        *ngFor="let job of jobOffers; trackBy: trackByJobId" 
+        class="job-card">
+        <div class="job-header">
+          <h4>{{ job.title }}</h4>
+          <div class="company">{{ job.user.name }}</div>
+        </div>
+        
+        <div class="job-details">
+          <div class="location">📍 {{ job.luogo }}</div>
+          <div class="contract">📋 {{ job.contract_type }}</div>
+          <div class="job-type">💼 {{ job.job_type }}</div>
+          <div class="salary" *ngIf="job.ral">
+            💰 {{ job.ral }}{{ job.ral_max ? ' - ' + job.ral_max : '' }}€
+          </div>
+        </div>
+        
+        <div class="job-description">
+          {{ job.description | slice:0:200 }}{{ job.description.length > 200 ? '...' : '' }}
+        </div>
+        
+        <div class="skills" *ngIf="job.hard_skill">
+          <strong>Skills richieste:</strong> {{ job.hard_skill }}
+        </div>
+
+        <div class="requirements" *ngIf="job.must_have">
+          <strong>Requisiti:</strong> {{ job.must_have | slice:0:150 }}{{ job.must_have.length > 150 ? '...' : '' }}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Reset -->
+    <div class="actions">
+      <button 
+        (click)="resetSearch()"
+        class="btn btn-secondary">
+        🔄 Nuova Ricerca
+      </button>
+    </div>
+  </div>
+
+  <!-- Nessuna offerta trovata -->
+  <div *ngIf="jobOffers.length === 0 && hasSearched" class="no-results-section">
+    <div class="no-results-message">
+      <h3>Nessuna offerta trovata (0)</h3>
+      <p>Non sono state trovate offerte di lavoro che corrispondono ai criteri di ricerca specificati.</p>
+      <button 
+        (click)="resetSearch()"
+        class="btn btn-secondary">
+        🔄 Nuova Ricerca
+      </button>
+    </div>
+  </div>
+</div>

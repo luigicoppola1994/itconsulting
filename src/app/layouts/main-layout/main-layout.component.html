@@ -13,22 +13,41 @@
     <router-outlet></router-outlet>
   </div>
 
-  <div class="voice-control-bar" [ngClass]="getVoiceControlBarClasses()" [ngStyle]="getVoiceControlBarStyles()">
-    <div class="voice-control-center">
-      <button class="microphone-button" (click)="onMicrophoneClick()">
-        <img src="/assets/icons/microphone.svg" alt="Microfono" class="microphone-icon" />
-        <span class="microphone-pulse" [style.--pulse-intensity]="conversationState.speakingIntensity"></span>
+  <div class="voice-control-bar" 
+       [class]="getVoiceControlBarClasses().join(' ')"
+       [ngStyle]="getVoiceControlBarStyles()">
+    
+    <div class="voice-control-content">
+      <div class="agent-name">{{ getCurrentAgentName() }}</div>
+      
+      <button class="microphone-button" 
+              (click)="onMicrophoneClick()"
+              [disabled]="conversationState.status === 'connecting'"
+              [class.connected]="conversationState.status === 'connected'"
+              [class.connecting]="conversationState.status === 'connecting'"
+              [class.speaking]="conversationState.isAgentSpeaking"
+              [class.listening]="conversationState.isUserSpeaking"
+              [attr.aria-label]="conversationState.status === 'connected' ? 'Termina conversazione' : 'Inizia conversazione vocale'">
+        
+        <!-- Icona normale -->
+        <svg *ngIf="conversationState.status === 'disconnected'" 
+             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
+        </svg>
+        
+        <!-- Icona connesso/parlando -->
+        <svg *ngIf="conversationState.status === 'connected'" 
+             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/>
+        </svg>
+        
+        <!-- Spinner di caricamento -->
+        <div *ngIf="conversationState.status === 'connecting'" class="loading-spinner">
+          <div class="spinner"></div>
+        </div>
       </button>
-      <div class="voice-status-text">
-        <span *ngIf="conversationService.isSDKLoading()">Caricamento SDK...</span>
-        <span *ngIf="!conversationService.isSDKLoading()">
-          {{ getVoiceControlText() }}
-        </span>
-      </div>
-      <div class="agent-name-display">
-        {{ getCurrentAgentNameForDisplay() }}
-        <span *ngIf="conversationState.status === 'connected'" class="status-dot"></span>
-      </div>
+      
+      <div class="instructions-text">{{ getVoiceControlText() }}</div>
     </div>
   </div>
 </div>

@@ -1,0 +1,433 @@
+// prodotti.component.scss
+
+// Variables
+$primary-blue: #1e4a72;
+$light-blue: #4a90c2;
+$accent-blue: #00bcd4;
+$white: #ffffff;
+$light-gray: #f8f9fa;
+$medium-gray: #e9ecef;
+$text-gray: #6c757d;
+$dark-gray: #343a40;
+$success-green: #28a745;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin section-padding {
+  padding: 80px 0;
+}
+
+@mixin container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@mixin card-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+@mixin button-primary {
+  background: linear-gradient(135deg, $primary-blue, $light-blue);
+  color: $white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba($primary-blue, 0.3);
+  }
+}
+
+@mixin button-secondary {
+  background: transparent;
+  color: $primary-blue;
+  border: 2px solid $primary-blue;
+  padding: 13px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: $primary-blue;
+    color: $white;
+    transform: translateY(-2px);
+  }
+}
+
+// Main Container
+.prodotti-container {
+  min-height: 100vh;
+  background: $white;
+
+  // Hero Section
+  .hero-section {
+    position: relative;
+    background: linear-gradient(135deg, rgba(30, 73, 114, 0.8), rgba(74, 144, 194, 0.6)),
+                url('https://www.itconsultingsrl.it/wp-content/uploads/2020/09/head-back.jpg?id=9429') center center/cover;
+    color: $white;
+    padding: 140px 0 100px;
+    min-height: 70vh;
+    @include flex-center;
+    text-align: center;
+    overflow: hidden;
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(30, 74, 114, 0.4);
+      z-index: 1;
+    }
+
+    .container {
+      @include container;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+
+      .page-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        letter-spacing: -0.02em;
+
+        @media (max-width: 768px) {
+          font-size: 2.5rem;
+        }
+      }
+
+      .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 3rem;
+        opacity: 0.9;
+        font-weight: 300;
+        line-height: 1.4;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 3rem;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .hero-stat {
+          text-align: center;
+
+          .stat-number {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: $accent-blue;
+          }
+
+          .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+        }
+      }
+    }
+  }
+
+  // Main Content Section
+  .main-content-section {
+    @include section-padding;
+    background: $light-gray;
+
+    .container {
+      @include container;
+    }
+
+    .intro-section {
+      text-align: center;
+      margin-bottom: 4rem;
+
+      .section-header {
+        margin-bottom: 2rem;
+
+        h2 {
+          font-size: 2.5rem;
+          color: $primary-blue;
+          margin-bottom: 1rem;
+          font-weight: 700;
+        }
+
+        .header-line {
+          width: 80px;
+          height: 4px;
+          background: linear-gradient(90deg, $accent-blue, $light-blue);
+          margin: 0 auto;
+          border-radius: 2px;
+        }
+      }
+
+      .intro-text {
+        font-size: 1.2rem;
+        color: $text-gray;
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+    }
+
+    // Services Grid
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 2rem;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .service-card {
+        background: $white;
+        border-radius: 16px;
+        @include card-shadow;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba($primary-blue, 0.1);
+
+        &:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 12px 40px rgba($primary-blue, 0.15);
+          border-color: rgba($primary-blue, 0.2);
+        }
+
+        .service-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          position: relative;
+
+          .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, $primary-blue, $light-blue);
+            border-radius: 12px;
+            @include flex-center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+
+            i {
+              font-size: 1.5rem;
+              color: $white;
+            }
+          }
+
+          .service-number {
+            position: absolute;
+            right: 0;
+            top: -10px;
+            background: $accent-blue;
+            color: $white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            @include flex-center;
+            font-weight: 700;
+            font-size: 1.1rem;
+          }
+
+          .service-title {
+            font-size: 1.4rem;
+            color: $primary-blue;
+            font-weight: 700;
+            margin-bottom: 0;
+            line-height: 1.3;
+          }
+        }
+
+        .service-content {
+          .service-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+              display: flex;
+              align-items: flex-start;
+              margin-bottom: 1rem;
+              font-size: 1rem;
+              color: $text-gray;
+              line-height: 1.5;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              i {
+                color: $success-green;
+                margin-right: 0.75rem;
+                margin-top: 0.25rem;
+                font-size: 0.9rem;
+                flex-shrink: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // CTA Section
+  .cta-section {
+    background: linear-gradient(135deg, $primary-blue 0%, $light-blue 100%);
+    color: $white;
+    @include section-padding;
+    text-align: center;
+
+    .container {
+      @include container;
+    }
+
+    .cta-content {
+      max-width: 700px;
+      margin: 0 auto;
+
+      h2 {
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+      }
+
+      p {
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.9;
+        line-height: 1.6;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .btn-primary {
+          @include button-primary;
+          background: $white;
+          color: $primary-blue;
+
+          &:hover {
+            background: $light-gray;
+            transform: translateY(-2px);
+          }
+        }
+
+        .btn-secondary {
+          @include button-secondary;
+          border-color: $white;
+          color: $white;
+
+          &:hover {
+            background: $white;
+            color: $primary-blue;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .prodotti-container {
+    .services-grid {
+      grid-template-columns: 1fr;
+      
+      .service-card {
+        padding: 1.5rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .prodotti-container {
+    .hero-section {
+      padding: 100px 0 80px;
+      min-height: 60vh;
+
+      .hero-content {
+        .page-title {
+          font-size: 2.2rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .main-content-section {
+      padding: 60px 0;
+
+      .intro-section {
+        .section-header h2 {
+          font-size: 2rem;
+        }
+
+        .intro-text {
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .cta-section {
+      padding: 60px 0;
+
+      .cta-content {
+        h2 {
+          font-size: 1.8rem;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+          align-items: center;
+
+          .btn-primary,
+          .btn-secondary {
+            width: 100%;
+            max-width: 280px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 // Importa i tipi necessari dall'SDK di ElevenLabs
 import { Conversation, SessionConfig, Callbacks, InputConfig, ClientToolsConfig, Role, Status, Mode } from '@11labs/client';
@@ -55,6 +56,39 @@ export interface ConversationState {
   speakingIntensity: number; // Intensità del parlato per effetti visivi
 }
 
+// Interfacce per le offerte di lavoro (specifiche per VALE)
+interface JobOffer {
+  id: number;
+  user_id: number;
+  title: string;
+  description: string;
+  must_have: string;
+  hard_skill: string;
+  soft_skill: string;
+  responsabilita: string;
+  attivita_lavorativa: string;
+  created_at: string;
+  updated_at: string;
+  isActive: number;
+  ral: string;
+  luogo: string;
+  contract_type: string;
+  job_type: string;
+  ral_max: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    avatar_url: string | null;
+    breezy_sessions: any[];
+  };
+}
+
+interface JobApiResponse {
+  success: boolean;
+  data: JobOffer[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -83,8 +117,8 @@ export class ConversationService implements OnDestroy {
     {
       id: 'vale',
       name: 'VALE',
-      agentId: 'agent_2601k185bjhaf30tsab9mcnwc5sr',
-      description: 'Assistente virtuale principale',
+      agentId: 'agent_4401k1jdyf5keey8pzph1qhxfh20',
+      description: 'Assistente per la ricerca di lavoro',
       avatar: '/assets/avatars/mioavatar.png',
       color: '#3B82F6'
     },
@@ -135,9 +169,16 @@ export class ConversationService implements OnDestroy {
   
   private volumeUpdateInterval?: number; // Intervallo per l'aggiornamento del volume
   private speakingDetectionThreshold = 0.1; // Soglia per rilevare il parlato
+  
+  // Dati specifici per VALE
+  private jobOffers: JobOffer[] = [];
+  private jobApiUrl = 'https://aziende.vale-hr.it/api/job-descriptions';
 
   // Costruttore del servizio, inietta il Router di Angular
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {
     console.log('🎤 ConversationService inizializzato');
     this.updateState({ sdkLoaded: true }); // Imposta l'SDK come caricato all'avvio del servizio
   }
@@ -251,7 +292,15 @@ export class ConversationService implements OnDestroy {
             console.log('🔧 Tool transferToAgent chiamato:', parameters);
             this.handleAgentTransferTool(parameters);
             return `Trasferimento a ${parameters.agentName || parameters.agentId} completato`;
-          }
+          },
+
+          // Tool specifico per l'agente VALE per filtrare offerte di lavoro
+          ...(agent.id === 'vale' ? {
+            getFilteredAnnunci: (parameters: any) => {
+              console.log('🔧 Tool getFilteredAnnunci chiamato:', parameters);
+              return this.handleGetFilteredAnnunci(parameters);
+            }
+          } : {})
         },
         
         // Callback quando la connessione è stabilita
@@ -705,6 +754,123 @@ export class ConversationService implements OnDestroy {
 
   getSpeakingIntensity(): number {
     return this.conversationStateSubject.value.speakingIntensity;
+  }
+
+  /**
+   * Gestisce il tool getFilteredAnnunci per l'agente VALE
+   */
+  private async handleGetFilteredAnnunci(parameters: any): Promise<string> {
+    try {
+      console.log('🔧 getFilteredAnnunci chiamato con parametri:', parameters);
+      
+      // Se non abbiamo annunci caricati, caricali prima
+      if (this.jobOffers.length === 0) {
+        await this.loadJobOffers();
+      }
+
+      const filters = parameters || {};
+      let filteredJobs = [...this.jobOffers];
+
+      // Filtra per titolo/parole chiave
+      if (filters.keywords) {
+        const keywords = filters.keywords.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => 
+          job.title.toLowerCase().includes(keywords) ||
+          job.description.toLowerCase().includes(keywords) ||
+          job.hard_skill.toLowerCase().includes(keywords) ||
+          job.soft_skill.toLowerCase().includes(keywords)
+        );
+      }
+
+      // Filtra per location (campo luogo)
+      if (filters.location) {
+        const location = filters.location.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => 
+          job.luogo.toLowerCase().includes(location)
+        );
+      }
+
+      // Filtra per tipo di contratto
+      if (filters.contract_type) {
+        const contractType = filters.contract_type.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => 
+          job.contract_type.toLowerCase().includes(contractType)
+        );
+      }
+
+      // Filtra per tipo di lavoro (remote, office, hybrid)
+      if (filters.job_type) {
+        const jobType = filters.job_type.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => 
+          job.job_type.toLowerCase().includes(jobType)
+        );
+      }
+
+      // Filtra per range salariale (ral è stringa)
+      if (filters.min_salary) {
+        const minSalary = parseInt(filters.min_salary);
+        filteredJobs = filteredJobs.filter(job => 
+          parseFloat(job.ral) >= minSalary
+        );
+      }
+
+      if (filters.max_salary) {
+        const maxSalary = parseInt(filters.max_salary);
+        filteredJobs = filteredJobs.filter(job => 
+          parseFloat(job.ral) <= maxSalary || (job.ral_max && parseFloat(job.ral_max) <= maxSalary)
+        );
+      }
+
+      // Notifica i componenti che ci sono nuovi risultati
+      this.notifyJobResults(filteredJobs);
+      
+      const result = `Trovati ${filteredJobs.length} annunci corrispondenti ai filtri. ${filteredJobs.length > 0 ? 'Ecco le prime offerte: ' + filteredJobs.slice(0, 3).map(j => `${j.title} presso ${j.user.name} a ${j.luogo}`).join(', ') : 'Prova con criteri diversi.'}`;
+      
+      console.log('✅ getFilteredAnnunci risultato:', result);
+      return result;
+
+    } catch (error) {
+      console.error('❌ Errore nel filtraggio degli annunci:', error);
+      return `Errore nel filtraggio degli annunci: ${error instanceof Error ? error.message : 'Errore sconosciuto'}`;
+    }
+  }
+
+  /**
+   * Carica le offerte di lavoro dall'API
+   */
+  private async loadJobOffers(): Promise<void> {
+    try {
+      console.log('📡 Caricamento offerte di lavoro...');
+      
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+
+      const response = await this.http.get<JobApiResponse>(
+        this.jobApiUrl,
+        { headers }
+      ).toPromise();
+
+      if (response && response.data) {
+        this.jobOffers = response.data;
+        console.log(`✅ Caricate ${response.data.length} offerte di lavoro`);
+      }
+
+    } catch (error) {
+      console.error('❌ Errore nel caricamento delle offerte:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Notifica i componenti sui nuovi risultati di lavoro
+   */
+  private notifyJobResults(jobs: JobOffer[]): void {
+    // Emette un evento customizzato per notificare i componenti
+    const event = new CustomEvent('jobResultsUpdated', { 
+      detail: { jobs } 
+    });
+    window.dispatchEvent(event);
   }
 
   // Metodo chiamato quando il servizio viene distrutto (pulizia risorse)

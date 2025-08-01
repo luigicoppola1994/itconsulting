@@ -11,6 +11,12 @@ interface MenuItem {
   link: string;
 }
 
+interface AudioDevice {
+  deviceId: string;
+  label: string;
+  kind: 'audioinput' | 'audiooutput';
+}
+
 @Component({
   selector: 'app-main-layout',
   standalone: true,
@@ -41,6 +47,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private previousUrl: string = '';
 
+  // Audio device management
+  inputDevices: AudioDevice[] = [];
+  outputDevices: AudioDevice[] = [];
+  selectedInputDevice: AudioDevice | null = null;
+  selectedOutputDevice: AudioDevice | null = null;
+  showInputDevices: boolean = false;
+  showOutputDevices: boolean = false;
+
   menuItems: MenuItem[] = [
     { name: 'CHI SIAMO', image: '/assets/avatars/mioavatar.png', link: 'chi-siamo' },
     { name: 'VALE', image: '/assets/avatars/mioavatar.png', link: 'vale' },
@@ -59,6 +73,12 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.checkCurrentRoute();
+
+    // Inizializza i dispositivi audio
+    this.initializeAudioDevices();
+
+    // Listener per chiudere i dropdown quando si clicca fuori
+    document.addEventListener('click', this.handleDocumentClick.bind(this));
 
     this.conversationService.conversationState$
       .pipe(takeUntil(this.destroy$))
@@ -94,6 +114,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    
+    // Rimuovi il listener del documento
+    document.removeEventListener('click', this.handleDocumentClick.bind(this));
   }
 
   private async checkCurrentRoute(url?: string): Promise<void> {
@@ -248,10 +271,114 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     return {};
   }
 
+  getCurrentAgentName(): string {
+    if (this.conversationState.currentAgent) {
+      return this.conversationState.currentAgent.name;
+    }
+    return this.selectedMenuItem?.name || 'SELEZIONA AGENTE';
+  }
+
   getCurrentAgentNameForDisplay(): string {
     if (this.conversationState.currentAgent) {
       return this.conversationState.currentAgent.name;
     }
     return this.selectedMenuItem?.name || 'SELEZIONA AGENTE';
+  }
+
+  // ============= AUDIO DEVICE MANAGEMENT =============
+
+  async initializeAudioDevices(): Promise<void> {
+    try {
+      // Richiedi autorizzazioni per accedere ai dispositivi
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Ottieni la lista dei dispositivi
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      
+      // Filtra e organizza i dispositivi
+      this.inputDevices = devices
+        .filter(device => device.kind === 'audioinput')
+        .map(device => ({
+          deviceId: device.deviceId,
+          label: device.label || `Microfono ${this.inputDevices.length + 1}`,
+          kind: device.kind as 'audioinput'
+        }));
+
+      this.outputDevices = devices
+        .filter(device => device.kind === 'audiooutput')
+        .map(device => ({
+          deviceId: device.deviceId,
+          label: device.label || `Altoparlante ${this.outputDevices.length + 1}`,
+          kind: device.kind as 'audiooutput'
+        }));
+
+      // Seleziona i dispositivi predefiniti
+      this.selectedInputDevice = this.inputDevices.find(device => device.deviceId === 'default') || this.inputDevices[0] || null;
+      this.selectedOutputDevice = this.outputDevices.find(device => device.deviceId === 'default') || this.outputDevices[0] || null;
+
+      console.log('🎧 Dispositivi audio MainLayout inizializzati:', {
+        input: this.inputDevices.length,
+        output: this.outputDevices.length,
+        selectedInput: this.selectedInputDevice?.label,
+        selectedOutput: this.selectedOutputDevice?.label
+      });
+
+    } catch (error) {
+      console.error('❌ Errore nell\'inizializzazione dei dispositivi audio MainLayout:', error);
+      
+      // Dispositivi fallback se non si riesce ad accedere ai veri dispositivi
+      this.inputDevices = [{ deviceId: 'default', label: 'Microfono predefinito', kind: 'audioinput' }];
+      this.outputDevices = [{ deviceId: 'default', label: 'Altoparlante predefinito', kind: 'audiooutput' }];
+      this.selectedInputDevice = this.inputDevices[0];
+      this.selectedOutputDevice = this.outputDevices[0];
+    }
+  }
+
+  toggleInputDeviceMenu(): void {
+    this.showInputDevices = !this.showInputDevices;
+    this.showOutputDevices = false; // Chiudi l'altro menu
+    console.log('🎤 Toggle menu dispositivi input MainLayout:', this.showInputDevices);
+  }
+
+  toggleOutputDeviceMenu(): void {
+    this.showOutputDevices = !this.showOutputDevices;
+    this.showInputDevices = false; // Chiudi l'altro menu
+    console.log('🔊 Toggle menu dispositivi output MainLayout:', this.showOutputDevices);
+  }
+
+  selectInputDevice(device: AudioDevice): void {
+    this.selectedInputDevice = device;
+    this.showInputDevices = false;
+    console.log('🎤 Dispositivo input selezionato MainLayout:', device.label);
+    
+    this.applyAudioDeviceChanges();
+  }
+
+  selectOutputDevice(device: AudioDevice): void {
+    this.selectedOutputDevice = device;
+    this.showOutputDevices = false;
+    console.log('🔊 Dispositivo output selezionato MainLayout:', device.label);
+    
+    this.applyAudioDeviceChanges();
+  }
+
+  private applyAudioDeviceChanges(): void {
+    // Questa funzione potrebbe essere utilizzata per applicare i cambiamenti
+    // ai dispositivi audio nell'SDK ElevenLabs se supportato
+    if (this.conversationState.status === 'connected') {
+      console.log('🔄 Applicazione cambiamenti dispositivi audio alla conversazione attiva MainLayout');
+      // TODO: Implementare se l'SDK ElevenLabs supporta il cambio dinamico di dispositivi
+    }
+  }
+
+  // Gestisce i click fuori dai dropdown per chiuderli
+  private handleDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    
+    // Verifica se il click è avvenuto fuori dai controlli audio
+    if (!target.closest('.audio-control')) {
+      this.showInputDevices = false;
+      this.showOutputDevices = false;
+    }
   }
 }
