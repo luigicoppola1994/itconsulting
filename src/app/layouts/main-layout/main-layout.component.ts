@@ -122,10 +122,12 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private async checkCurrentRoute(url?: string): Promise<void> {
     const currentUrl = url || this.router.url;
     
+    // VALE è sempre attivo, indipendentemente dalla pagina
+    await this.conversationService.setActiveAgentByRoute(currentUrl);
+    
     if (currentUrl === '/' || currentUrl === '/home') {
       this.showSidebar = false;
       this.selectedMenuItem = null;
-      await this.conversationService.setActiveAgentByRoute('');
     } else {
       const routePath = currentUrl.startsWith('/') ? currentUrl.substring(1) : currentUrl;
       const matchingItem = this.menuItems.find(item => item.link === routePath);
@@ -135,11 +137,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
           this.showSidebar = true;
         }
         this.selectedMenuItem = matchingItem;
-        await this.conversationService.setActiveAgentByRoute(matchingItem.link);
       } else {
         this.showSidebar = false;
         this.selectedMenuItem = null;
-        await this.conversationService.setActiveAgentByRoute('');
       }
     }
   }
@@ -149,67 +149,43 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  // NUOVA FUNZIONE: Gestisce l'azione vocale dalla sidebar
+  // AGGIORNATO: Ora VALE è sempre l'agente vocale, indipendentemente dalla pagina
   async onSidebarVoiceAction(item: MenuItem): Promise<void> {
-    console.log('🎤 Azione vocale dalla sidebar per:', item.name);
+    console.log('🎤 Azione vocale dalla sidebar - VALE parla per:', item.name);
     
     const currentState = this.conversationService.getCurrentState();
-    const targetAgentId = item.link;
 
     if (currentState.status === 'disconnected') {
       try {
-        console.log(`🚀 Avvio conversazione con agente: ${targetAgentId}`);
-        await this.conversationService.startConversation(targetAgentId);
+        console.log('🚀 Avvio conversazione con VALE (assistente universale)');
+        await this.conversationService.startConversation('vale');
       } catch (error) {
         console.error('Errore nell\'avvio della conversazione vocale:', error);
       }
     } else if (currentState.status === 'connected') {
-      // Se è già connesso con lo stesso agente, termina la conversazione
-      if (currentState.currentAgent?.name === item.name) {
-        try {
-          console.log('🔚 Termina conversazione corrente');
-          await this.conversationService.endConversation();
-        } catch (error) {
-          console.error('Errore nella terminazione della conversazione:', error);
-        }
-      } else {
-        // Se è connesso con un agente diverso, cambia agente
-        try {
-          console.log(`🔄 Cambio agente da ${currentState.currentAgent?.name} a ${item.name}`);
-          await this.conversationService.setActiveAgentByRoute(targetAgentId);
-        } catch (error) {
-          console.error('Errore nel cambio agente:', error);
-        }
+      try {
+        console.log('🔚 Termina conversazione con VALE');
+        await this.conversationService.endConversation();
+      } catch (error) {
+        console.error('Errore nella terminazione della conversazione:', error);
       }
     }
   }
 
-  // ESISTENTE: Gestisce il microfono principale (voice control bar)
+  // AGGIORNATO: Ora VALE è sempre l'assistente vocale universale
   async onMicrophoneClick(): Promise<void> {
     const currentState = this.conversationService.getCurrentState();
-    let targetAgentId: string | null = null;
-
-    if (this.selectedMenuItem) {
-        targetAgentId = this.selectedMenuItem.link;
-    } else {
-        targetAgentId = 'vale'; 
-    }
-
-    if (!targetAgentId) {
-        console.warn('Impossibile avviare la conversazione: nessun agente di destinazione identificato per questa pagina.');
-        return;
-    }
 
     if (currentState.status === 'disconnected') {
         try {
-            console.log(`🚀 Avvio conversazione globale con: ${targetAgentId}`);
-            await this.conversationService.startConversation(targetAgentId);
+            console.log('🚀 Avvio conversazione globale con VALE (assistente universale)');
+            await this.conversationService.startConversation('vale');
         } catch (error) {
             console.error('Errore nell\'avvio della conversazione vocale globale:', error);
         }
     } else if (currentState.status === 'connected') {
         try {
-            console.log('🔚 Chiusura conversazione globale.');
+            console.log('🔚 Chiusura conversazione globale con VALE.');
             await this.conversationService.endConversation();
         } catch (error) {
             console.error('Errore nella chiusura della conversazione vocale globale:', error);
@@ -272,17 +248,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   getCurrentAgentName(): string {
-    if (this.conversationState.currentAgent) {
-      return this.conversationState.currentAgent.name;
-    }
-    return this.selectedMenuItem?.name || 'SELEZIONA AGENTE';
+    // VALE è sempre l'assistente vocale attivo
+    return 'VALE';
   }
 
   getCurrentAgentNameForDisplay(): string {
-    if (this.conversationState.currentAgent) {
-      return this.conversationState.currentAgent.name;
-    }
-    return this.selectedMenuItem?.name || 'SELEZIONA AGENTE';
+    // VALE è sempre l'assistente vocale, ma mostra il contesto della pagina
+    const pageName = this.selectedMenuItem?.name || 'HOME';
+    return `VALE (su ${pageName})`;
   }
 
   // ============= AUDIO DEVICE MANAGEMENT =============

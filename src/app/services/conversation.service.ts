@@ -112,55 +112,15 @@ export class ConversationService implements OnDestroy {
     speakingIntensity: 0
   });
 
-  // Array di configurazioni degli agenti disponibili
+  // Solo VALE - assistente universale che parla su tutte le pagine
   private agents: AgentConfig[] = [
     {
       id: 'vale',
       name: 'VALE',
       agentId: 'agent_4401k1jdyf5keey8pzph1qhxfh20',
-      description: 'Assistente per la ricerca di lavoro',
+      description: 'Assistente universale per tutte le pagine',
       avatar: '/assets/avatars/mioavatar.png',
       color: '#3B82F6'
-    },
-    {
-      id: 'chi-siamo',
-      name: 'CHI SIAMO',
-      agentId: 'agent_9601k185f7zpembtqc6qhmm3ax1c',
-      description: 'Esperto di informazioni aziendali',
-      avatar: '/assets/avatars/mioavatar.png',
-      color: '#10B981'
-    },
-    {
-      id: 'contatti',
-      name: 'CONTATTI',
-      agentId: 'agent_3201k185jc6hfrsamry32ehq7jbv',
-      description: 'Gestione contatti e comunicazioni',
-      avatar: '/assets/avatars/mioavatar.png',
-      color: '#F59E0B'
-    },
-    {
-      id: 'prodotti',
-      name: 'PRODOTTI',
-      agentId: 'agent_3901k185nvsnebb99gmqk9femtwh',
-      description: 'Specialista prodotti e servizi',
-      avatar: '/assets/avatars/mioavatar.png',
-      color: '#EF4444'
-    },
-    {
-      id: 'consulenza',
-      name: 'CONSULENZA',
-      agentId: 'agent_8501k185vx3sfwevxz287jw0qs9m',
-      description: 'Consulente tecnico specializzato',
-      avatar: '/assets/avatars/mioavatar.png',
-      color: '#8B5CF6'
-    },
-    {
-      id: 'formazione',
-      name: 'FORMAZIONE',
-      agentId: 'agent_9401k18619b4fd8bcaqg0b98twzx',
-      description: 'Esperto di formazione e corsi',
-      avatar: '/assets/avatars/mioavatar.png',
-      color: '#EC4899'
     }
   ];
 
@@ -199,42 +159,19 @@ export class ConversationService implements OnDestroy {
   }
 
   /**
-   * Imposta l'agente attivo per la conversazione in base al percorso della rotta fornito.
-   * Gestisce l'avvio e la chiusura delle conversazioni necessarie per il cambio di agente.
-   * @param routePath Il percorso della rotta della pagina (es. 'vale', 'contatti').
+   * VALE è sempre attivo su tutte le pagine.
+   * @param routePath Il percorso della rotta della pagina (ignorato, VALE parla sempre).
    */
   async setActiveAgentByRoute(routePath: string): Promise<void> {
-    const cleanRoute = routePath.startsWith('/') ? routePath.substring(1) : routePath;
-    const targetAgent = this.agents.find(agent => agent.id === cleanRoute);
+    const valeAgent = this.agents[0]; // VALE è l'unico agente
     const currentState = this.conversationStateSubject.value;
 
-    // Se non c'è un agente target per questa rotta e una conversazione è attiva, la termina.
-    // Questo gestisce casi come la navigazione alla homepage o a una rotta non riconosciuta.
-    if (!targetAgent) {
-      if (currentState.status === 'connected') {
-        console.log(`❌ Nessun agente per la rotta '${routePath}'. Terminando la conversazione attiva.`);
-        await this.endConversation();
-      }
-      this.updateState({ currentAgent: null }); // Assicura che currentAgent sia null se non c'è un agente per la rotta
-      return;
-    }
+    console.log(`🎤 VALE è attivo su pagina: ${routePath}`);
 
-    // Se nessun agente è attualmente attivo, o se l'agente corrente è diverso dall'agente target
-    if (!currentState.currentAgent || currentState.currentAgent.id !== targetAgent.id) {
-      console.log(`🔄 Rotta cambiata. Tentativo di switch/start agente a: ${targetAgent.name}`);
-      
-      // Termina la conversazione corrente, se presente, per stabilire una nuova connessione con il nuovo agente.
-      if (currentState.status === 'connected') {
-        await this.endConversation();
-      }
-      
-      // Avvia la conversazione con il nuovo agente.
-      await this.startConversation(targetAgent.id);
-    } else {
-      console.log(`ℹ️ Agente ${targetAgent.name} già attivo per la rotta '${routePath}'. Nessun cambio necessario.`);
-      // Se lo stesso agente è già attivo, assicurati solo che lo stato visivo sia coerente
+    // Se VALE non è già impostato come agente corrente
+    if (!currentState.currentAgent || currentState.currentAgent.id !== 'vale') {
       this.updateState({ 
-        currentAgent: { ...targetAgent }, // Assicura che venga usata la configurazione più recente dell'agente (es. colore)
+        currentAgent: { ...valeAgent },
         visualState: currentState.isAgentSpeaking ? 'speaking' : (currentState.isUserSpeaking ? 'listening' : 'idle')
       });
     }
@@ -280,27 +217,19 @@ export class ConversationService implements OnDestroy {
       const sessionOptions: SessionOptions = {
         agentId: agent.agentId,
         
-        // Definisce i tool client-side che l'agente può chiamare
+        // Definisce i tool client-side che VALE può chiamare
         clientTools: {
           redirectToExternalURL: (parameters: any) => {
             console.log('🔧 Tool redirectToExternalURL chiamato:', parameters);
             this.handleRedirectTool(parameters);
             return `Reindirizzamento a ${parameters.url} completato`;
           },
-          
-          transferToAgent: (parameters: any) => {
-            console.log('🔧 Tool transferToAgent chiamato:', parameters);
-            this.handleAgentTransferTool(parameters);
-            return `Trasferimento a ${parameters.agentName || parameters.agentId} completato`;
-          },
 
-          // Tool specifico per l'agente VALE per filtrare offerte di lavoro
-          ...(agent.id === 'vale' ? {
-            getFilteredAnnunci: (parameters: any) => {
-              console.log('🔧 Tool getFilteredAnnunci chiamato:', parameters);
-              return this.handleGetFilteredAnnunci(parameters);
-            }
-          } : {})
+          // Tool per filtrare offerte di lavoro
+          getFilteredAnnunci: (parameters: any) => {
+            console.log('🔧 Tool getFilteredAnnunci chiamato:', parameters);
+            return this.handleGetFilteredAnnunci(parameters);
+          }
         },
         
         // Callback quando la connessione è stabilita
@@ -423,68 +352,29 @@ export class ConversationService implements OnDestroy {
     }
   }
 
-  /**
-   * Gestisce il tool `transferToAgent` chiamato dall'agente.
-   * Avvia la navigazione verso la pagina del nuovo agente.
-   * Si assume che l'agente precedente abbia già pronunciato il messaggio di trasferimento.
-   * @param parameters I parametri del tool, inclusi `agentId` e `agentName`.
-   */
-  private async handleAgentTransferTool(parameters: any): Promise<void> {
-    const { agentId, agentName } = parameters;
-    console.log(`🔄 Tool transfer agente: ${agentId} (${agentName || 'Nome non specificato'})`);
-
-    const targetAgent = this.getAgentById(agentId);
-
-    if (!targetAgent) {
-      console.error(`❌ Agente ${agentId} non trovato`);
-      this.showNotification(`Agente ${agentId} non trovato`, 'error');
-      return;
-    }
-
-    // A questo punto, assumiamo che l'agente precedente abbia già pronunciato il messaggio di trasferimento
-    // prima di chiamare questo tool. Quindi, procediamo direttamente con la navigazione.
-    console.log(`✅ Agente precedente ha chiamato il tool di trasferimento. Procedo con il reindirizzamento.`);
-    this.showNotification(`Trasferimento a ${targetAgent.name}...`);
-
-    try {
-      // Esegui la navigazione immediatamente.
-      // Il MainLayoutComponent rileverà il cambio di rotta e chiamerà setActiveAgentByRoute,
-      // che terminerà la vecchia conversazione e avvierà quella con il nuovo agente.
-      await this.router.navigate([agentId]);
-      console.log(`✅ Navigazione completata per trasferimento agente: ${agentId}`);
-    } catch (error) {
-      console.error('❌ Errore durante la navigazione per il trasferimento:', error);
-      this.showNotification(`Errore nel trasferimento: ${error}`, 'error');
-    }
-  }
 
   /**
-   * Metodo per la selezione esplicita di un agente vocale, tipicamente dalla schermata iniziale.
-   * Attiva la navigazione alla pagina dell'agente, e il MainLayoutComponent gestirà l'attivazione.
-   * @param newAgentId L'ID interno dell'agente a cui passare.
+   * Avvia/ferma la conversazione con VALE (l'unico agente disponibile).
    */
-  async switchAgentWithTool(newAgentId: string): Promise<void> {
-    const newAgent = this.getAgentById(newAgentId);
-    if (!newAgent) {
-      console.error(`Agente ${newAgentId} non trovato`);
-      return;
+  async switchAgentWithTool(newAgentId: string = 'vale'): Promise<void> {
+    // Solo VALE è supportato
+    if (newAgentId !== 'vale') {
+      console.warn(`Solo VALE è supportato, ma è stato richiesto: ${newAgentId}. Uso VALE.`);
     }
 
-    const currentRoute = this.router.url.startsWith('/') ? this.router.url.substring(1) : this.router.url;
-    if (currentRoute !== newAgentId) {
-        // Se non siamo sulla pagina di destinazione, naviga lì. MainLayoutComponent gestirà quindi l'attivazione dell'agente.
-        console.log(`Navigazione a ${newAgentId} per il cambio agente.`);
-        this.router.navigate([newAgentId]);
+    const currentState = this.conversationStateSubject.value;
+    
+    if (currentState.status === 'connected') {
+      // Se è già connesso, termina la conversazione
+      await this.endConversation();
     } else {
-        // Se siamo già sulla pagina, attiva direttamente l'agente.
-        // Questo gestisce i casi in cui l'utente clicca sull'icona del microfono sulla pagina già attiva.
-        console.log(`Già sulla pagina ${newAgentId}. Attivazione diretta dell'agente.`);
-        await this.setActiveAgentByRoute(newAgentId);
+      // Se non è connesso, avvia la conversazione
+      await this.startConversation('vale');
     }
   }
 
-  // Metodo di compatibilità, ora chiama switchAgentWithTool
-  async switchAgent(newAgentId: string): Promise<void> {
+  // Metodo di compatibilità
+  async switchAgent(newAgentId: string = 'vale'): Promise<void> {
     return this.switchAgentWithTool(newAgentId);
   }
 
@@ -521,7 +411,7 @@ export class ConversationService implements OnDestroy {
     }
   }
 
-  // Controlla se un URL è interno all'applicazione
+  // Controlla se un URL è interno all'applicazione (VALE parla su tutte le pagine)
   private isInternalUrl(url: string): boolean {
     const internalRoutes = [
       '/vale', '/chi-siamo', '/contatti', '/prodotti', '/consulenza', '/formazione',

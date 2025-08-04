@@ -10,7 +10,8 @@
       "Bash(npx tsc:*)",
       "WebFetch(domain:aziende.vale-hr.it)",
       "WebFetch(domain:elevenlabs.io)",
-      "Bash(npx ng build:*)"
+      "Bash(npx ng build:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }

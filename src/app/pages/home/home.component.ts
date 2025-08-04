@@ -147,58 +147,40 @@ export class HomeComponent implements OnInit, OnDestroy {
     }, 400);
   }
 
-  // AZIONE VOCALE: Click sul microfono dell'avatar (NON naviga)
+  // AGGIORNATO: Ora VALE è sempre l'assistente vocale, indipendentemente dall'avatar cliccato
   onAvatarVoiceSelect(avatar: Avatar): void {
-    console.log(`🎤 Selezione vocale agente: ${avatar.name} (SENZA navigazione)`);
+    console.log(`🎤 Selezione vocale - VALE parlerà per ${avatar.name}`);
     
-    // Aggiorna solo l'agente selezionato per la voce
+    // Aggiorna l'avatar selezionato per scopi visivi, ma VALE è sempre l'assistente
     this.selectedAgentForVoice = avatar;
     
-    // Gestisce il cambio agente o avvio conversazione
-    this.handleVoiceAction(avatar);
+    // VALE gestisce la conversazione per tutti i contenuti
+    this.handleVoiceAction();
   }
 
-  // NUOVA FUNZIONE: Gestisce le azioni vocali
-  private async handleVoiceAction(avatar: Avatar): Promise<void> {
+  // AGGIORNATO: VALE gestisce tutte le conversazioni
+  private async handleVoiceAction(): Promise<void> {
     const currentState = this.conversationState;
 
     if (currentState.status === 'disconnected') {
-      // Se disconnesso, avvia conversazione con l'agente selezionato
       try {
-        console.log(`🚀 Avvio conversazione vocale con: ${avatar.name}`);
-        await this.conversationService.startConversation(avatar.link);
+        console.log('🚀 Avvio conversazione vocale con VALE (assistente universale)');
+        await this.conversationService.startConversation('vale');
       } catch (error) {
         console.error('Errore nell\'avvio della conversazione vocale:', error);
       }
     } else if (currentState.status === 'connected') {
-      // Se già connesso, verifica se è lo stesso agente
-      if (currentState.currentAgent?.name === avatar.name) {
-        // Stesso agente: termina la conversazione
-        try {
-          console.log(`🔚 Termina conversazione con: ${avatar.name}`);
-          await this.conversationService.endConversation();
-        } catch (error) {
-          console.error('Errore nella terminazione della conversazione:', error);
-        }
-      } else {
-        // Agente diverso: cambia agente senza terminare
-        try {
-          console.log(`🔄 Cambio agente da ${currentState.currentAgent?.name} a ${avatar.name}`);
-          await this.conversationService.setActiveAgentByRoute(avatar.link);
-        } catch (error) {
-          console.error('Errore nel cambio agente:', error);
-        }
+      try {
+        console.log('🔚 Termina conversazione con VALE');
+        await this.conversationService.endConversation();
+      } catch (error) {
+        console.error('Errore nella terminazione della conversazione:', error);
       }
     }
   }
 
-  // MICROFONO PRINCIPALE: Gestisce la conversazione con l'agente attualmente selezionato
+  // AGGIORNATO: VALE è sempre l'assistente vocale principale
   async onMicrophoneClick(): Promise<void> {
-    if (!this.selectedAgentForVoice) {
-      console.warn('Nessun agente selezionato per la voce');
-      return;
-    }
-
     if (this.conversationService.isConnected()) {
       await this.endVoiceConversation();
     } else {
@@ -207,11 +189,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private async startVoiceConversation(): Promise<void> {
-    if (!this.selectedAgentForVoice) return;
-
     try {
-      console.log(`🚀 Avvio conversazione con: ${this.selectedAgentForVoice.name}`);
-      await this.conversationService.startConversation(this.selectedAgentForVoice.link);
+      console.log('🚀 Avvio conversazione con VALE (assistente universale)');
+      await this.conversationService.startConversation('vale');
     } catch (error) {
       console.error('Errore nell\'avvio della conversazione vocale:', error);
     }
@@ -219,6 +199,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private async endVoiceConversation(): Promise<void> {
     try {
+      console.log('🔚 Terminazione conversazione con VALE');
       await this.conversationService.endConversation();
     } catch (error) {
       console.error('Errore nella chiusura della conversazione vocale:', error);
@@ -240,10 +221,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getCurrentAgentName(): string {
-    if (this.conversationState.currentAgent) {
-      return this.conversationState.currentAgent.name;
-    }
-    return this.selectedAgentForVoice?.name || 'SELEZIONA AGENTE';
+    // VALE è sempre l'assistente vocale
+    return 'VALE';
   }
 
   isAvatarSelectedForVoice(avatar: Avatar): boolean {
@@ -251,21 +230,25 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   isAvatarConnected(avatar: Avatar): boolean {
+    // VALE è sempre connesso quando c'è una conversazione attiva, 
+    // ma visivamente mostra solo per l'avatar selezionato
     return this.conversationState.status === 'connected' && 
-           this.conversationState.currentAgent?.name === avatar.name;
+           this.selectedAgentForVoice?.name === avatar.name;
   }
 
   isAvatarSpeaking(avatar: Avatar): boolean {
+    // VALE parla, ma visivamente si illumina solo l'avatar selezionato
     return this.isAvatarConnected(avatar) && 
            this.conversationState.isAgentSpeaking;
   }
 
   getAvatarIllumination(avatar: Avatar): string {
     if (this.isAvatarSpeaking(avatar)) {
-      return this.conversationState.currentAgent?.color || avatar.color || '#3B82F6';
+      // VALE è sempre l'agente attivo, usa il suo colore
+      return '#3B82F6';
     } else if (this.isAvatarConnected(avatar)) {
-      const color = this.conversationState.currentAgent?.color || avatar.color || '#3B82F6';
-      return `${color}80`;
+      // VALE connesso, usa colore con trasparenza
+      return '#3B82F680';
     }
     return 'transparent';
   }
@@ -354,24 +337,22 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getVoiceControlBarStyles(): { [key: string]: string } {
-    if (this.conversationState.currentAgent) {
-      const agentColor = this.conversationState.currentAgent.color || '#3B82F6';
-      
-      console.log(`🎨 Voice Control Bar - Agente: ${this.conversationState.currentAgent.name}, Colore: ${agentColor}`);
-      
-      return {
-        '--current-agent-color': agentColor,
-        '--speaking-intensity': this.conversationState.speakingIntensity.toString()
-      };
-    }
-    return {};
+    // VALE è sempre l'agente attivo, usa sempre il suo colore
+    const valeColor = '#3B82F6';
+    
+    console.log(`🎨 Voice Control Bar - VALE (assistente universale), Colore: ${valeColor}`);
+    
+    return {
+      '--current-agent-color': valeColor,
+      '--speaking-intensity': this.conversationState.speakingIntensity.toString()
+    };
   }
 
   debugCurrentState(): void {
-    console.log('🔍 Debug Stato Corrente:', {
+    console.log('🔍 Debug Stato VALE:', {
       selectedAgentForVoice: this.selectedAgentForVoice?.name,
-      currentAgent: this.conversationState.currentAgent?.name,
-      currentAgentColor: this.conversationState.currentAgent?.color,
+      valeActive: 'SEMPRE ATTIVO',
+      valeColor: '#3B82F6',
       status: this.conversationState.status,
       visualState: this.conversationState.visualState,
       isAgentSpeaking: this.conversationState.isAgentSpeaking,
@@ -386,40 +367,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   forceRefreshIllumination(): void {
-    if (this.conversationState.currentAgent) {
-      console.log(`🔄 Forzando aggiornamento illuminazione per ${this.conversationState.currentAgent.name}`);
-      this.conversationService['updateState']({});
-      setTimeout(() => {
-        console.log('✅ Illuminazione aggiornata');
-      }, 100);
+    console.log('🔄 Forzando aggiornamento illuminazione per VALE (assistente universale)');
+    this.conversationService['updateState']({});
+    setTimeout(() => {
+      console.log('✅ Illuminazione VALE aggiornata');
+    }, 100);
+  }
+
+  // RIMOSSO: Solo VALE è supportato, non servono più test di switch tra agenti
+  testValeConnection(): void {
+    console.log('🧪 Test connessione VALE');
+    if (this.conversationState.status === 'connected') {
+      this.conversationService.endConversation();
+    } else {
+      this.conversationService.startConversation('vale');
     }
-  }
-
-  testSwitchAgent(agentId: string): void {
-    console.log(`🧪 Test switch agent via button to: ${agentId}`);
-    this.conversationService.switchAgentWithTool(agentId);
-  }
-
-  testToolCallFlow(): void {
-    console.log('🧪 Test flusso completo tool call');
-    
-    const testAgents = ['contatti', 'prodotti', 'consulenza'];
-    let currentIndex = 0;
-    
-    const testNext = () => {
-      if (currentIndex < testAgents.length) {
-        const agentId = testAgents[currentIndex];
-        console.log(`🧪 Test ${currentIndex + 1}/${testAgents.length}: ${agentId}`);
-        
-        this.conversationService.switchAgentWithTool(agentId);
-        currentIndex++;
-        
-        setTimeout(testNext, 3000);
-      } else {
-        console.log('✅ Test completato');
-      }
-    };
-    
-    testNext();
   }
 }
