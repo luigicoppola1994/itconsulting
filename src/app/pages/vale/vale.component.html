@@ -52,11 +52,21 @@
         </div>
         
         <div class="job-details">
-          <div class="location">📍 {{ job.luogo }}</div>
-          <div class="contract">📋 {{ job.contract_type }}</div>
-          <div class="job-type">💼 {{ job.job_type }}</div>
+          <div class="location">
+            <span class="icon-circle location-icon">📍</span>
+            {{ job.luogo }}
+          </div>
+          <div class="contract">
+            <span class="icon-circle contract-icon">📋</span>
+            {{ job.contract_type }}
+          </div>
+          <div class="job-type">
+            <span class="icon-circle job-type-icon">💼</span>
+            {{ job.job_type }}
+          </div>
           <div class="salary" *ngIf="job.ral">
-            💰 {{ job.ral }}{{ job.ral_max ? ' - ' + job.ral_max : '' }}€
+            <span class="icon-circle salary-icon">💰</span>
+            {{ job.ral }}{{ job.ral_max ? ' - ' + job.ral_max : '' }}€
           </div>
         </div>
         

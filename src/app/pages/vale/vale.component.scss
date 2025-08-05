@@ -248,6 +248,37 @@
       border-radius: 20px;
       font-size: 0.9rem;
       color: #495057;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .icon-circle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        font-size: 12px;
+        color: white;
+        flex-shrink: 0;
+        
+        &.location-icon {
+          background-color: #e74c3c;
+        }
+        
+        &.contract-icon {
+          background-color: #3498db;
+        }
+        
+        &.job-type-icon {
+          background-color: #9b59b6;
+        }
+        
+        &.salary-icon {
+          background-color: #27ae60;
+        }
+      }
     }
   }
   

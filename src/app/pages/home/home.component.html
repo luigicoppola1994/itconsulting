@@ -43,15 +43,17 @@
                 <p class="avatar-name">{{ avatars[0].name }}</p>
               </div>
               
-              <!-- Pulsante vocale separato -->
-              <button class="voice-select-btn" 
+              <!-- Pulsante vocale separato - Solo per VALE -->
+              <button *ngIf="avatars[0].name === 'VALE'" 
+                      class="voice-select-btn" 
                       (click)="onAvatarVoiceSelect(avatars[0])"
                       [class.active]="isAvatarSelectedForVoice(avatars[0])"
                       [class.connected]="isAvatarConnected(avatars[0])"
                       [class.speaking]="isAvatarSpeaking(avatars[0])"
                       [attr.aria-label]="'Seleziona ' + avatars[0].name + ' per conversazione vocale'">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
+                  <path d="M12 2c-1.7 0-3 1.3-3 3v6c0 1.7 1.3 3 3 3s3-1.3 3-3V5c0-1.7-1.3-3-3-3zm0 14c-2.8 0-5-2.2-5-5H5c0 3.9 3.1 7 7 7s7-3.1 7-7h-2c0 2.8-2.2 5-5 5z"/>
+                  <rect x="11" y="19" width="2" height="3"/>
                 </svg>
               </button>
             </div>
@@ -74,16 +76,6 @@
                 <p class="avatar-name">{{ avatars[1].name }}</p>
               </div>
               
-              <button class="voice-select-btn" 
-                      (click)="onAvatarVoiceSelect(avatars[1])"
-                      [class.active]="isAvatarSelectedForVoice(avatars[1])"
-                      [class.connected]="isAvatarConnected(avatars[1])"
-                      [class.speaking]="isAvatarSpeaking(avatars[1])"
-                      [attr.aria-label]="'Seleziona ' + avatars[1].name + ' per conversazione vocale'">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
-                </svg>
-              </button>
             </div>
 
             <div class="avatar-item"
@@ -101,16 +93,6 @@
                 <p class="avatar-name">{{ avatars[2].name }}</p>
               </div>
               
-              <button class="voice-select-btn" 
-                      (click)="onAvatarVoiceSelect(avatars[2])"
-                      [class.active]="isAvatarSelectedForVoice(avatars[2])"
-                      [class.connected]="isAvatarConnected(avatars[2])"
-                      [class.speaking]="isAvatarSpeaking(avatars[2])"
-                      [attr.aria-label]="'Seleziona ' + avatars[2].name + ' per conversazione vocale'">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -131,16 +113,6 @@
                 <p class="avatar-name">{{ avatars[3].name }}</p>
               </div>
               
-              <button class="voice-select-btn" 
-                      (click)="onAvatarVoiceSelect(avatars[3])"
-                      [class.active]="isAvatarSelectedForVoice(avatars[3])"
-                      [class.connected]="isAvatarConnected(avatars[3])"
-                      [class.speaking]="isAvatarSpeaking(avatars[3])"
-                      [attr.aria-label]="'Seleziona ' + avatars[3].name + ' per conversazione vocale'">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
-                </svg>
-              </button>
             </div>
 
             <div class="avatar-item"
@@ -158,16 +130,6 @@
                 <p class="avatar-name">{{ avatars[4].name }}</p>
               </div>
               
-              <button class="voice-select-btn" 
-                      (click)="onAvatarVoiceSelect(avatars[4])"
-                      [class.active]="isAvatarSelectedForVoice(avatars[4])"
-                      [class.connected]="isAvatarConnected(avatars[4])"
-                      [class.speaking]="isAvatarSpeaking(avatars[4])"
-                      [attr.aria-label]="'Seleziona ' + avatars[4].name + ' per conversazione vocale'">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
-                </svg>
-              </button>
             </div>
 
             <div class="avatar-item"
@@ -185,16 +147,6 @@
                 <p class="avatar-name">{{ avatars[5].name }}</p>
               </div>
               
-              <button class="voice-select-btn" 
-                      (click)="onAvatarVoiceSelect(avatars[5])"
-                      [class.active]="isAvatarSelectedForVoice(avatars[5])"
-                      [class.connected]="isAvatarConnected(avatars[5])"
-                      [class.speaking]="isAvatarSpeaking(avatars[5])"
-                      [attr.aria-label]="'Seleziona ' + avatars[5].name + ' per conversazione vocale'">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -220,7 +172,8 @@
           <!-- Icona normale -->
           <svg *ngIf="conversationState.status === 'disconnected'" 
                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3.53-2.64 6.44-6.3 6.93V21h-2v-3.07c-3.66-.49-6.3-3.4-6.3-6.93h2c0 2.76 2.24 5 5 5s5-2.24 5-5h2z"/>
+            <path d="M12 2c-1.7 0-3 1.3-3 3v6c0 1.7 1.3 3 3 3s3-1.3 3-3V5c0-1.7-1.3-3-3-3zm0 14c-2.8 0-5-2.2-5-5H5c0 3.9 3.1 7 7 7s7-3.1 7-7h-2c0 2.8-2.2 5-5 5z"/>
+            <rect x="11" y="19" width="2" height="3"/>
           </svg>
           
           <!-- Icona connesso/parlando -->

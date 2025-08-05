@@ -56,12 +56,12 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   showOutputDevices: boolean = false;
 
   menuItems: MenuItem[] = [
-    { name: 'CHI SIAMO', image: '/assets/avatars/mioavatar.png', link: 'chi-siamo' },
+    { name: 'CHI SIAMO', image: '/assets/icons/info-circle.svg', link: 'chi-siamo' },
     { name: 'VALE', image: '/assets/avatars/mioavatar.png', link: 'vale' },
-    { name: 'CONTATTI', image: '/assets/avatars/mioavatar.png', link: 'contatti' },
-    { name: 'PRODOTTI', image: '/assets/avatars/mioavatar.png', link: 'prodotti' },
-    { name: 'CONSULENZA', image: '/assets/avatars/mioavatar.png', link: 'consulenza' },
-    { name: 'FORMAZIONE', image: '/assets/avatars/mioavatar.png', link: 'formazione' }
+    { name: 'CONTATTI', image: '/assets/icons/phone.svg', link: 'contatti' },
+    { name: 'PRODOTTI', image: '/assets/icons/package.svg', link: 'prodotti' },
+    { name: 'CONSULENZA', image: '/assets/icons/briefcase.svg', link: 'consulenza' },
+    { name: 'FORMAZIONE', image: '/assets/icons/graduation-cap.svg', link: 'formazione' }
   ];
 
   constructor(

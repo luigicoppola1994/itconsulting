@@ -528,14 +528,29 @@ body {
     transition: all $transition-ease;
     box-shadow: $shadow-md;
     overflow: hidden;
+    display: flex; // Aggiunto per centrare le icone
+    align-items: center; // Centra verticalmente
+    justify-content: center; // Centra orizzontalmente
 
     .avatar-image-fill {
       width: 100%;
       height: 100%;
       border-radius: 50%;
       object-fit: cover;
-      filter: saturate(1.1) brightness(1.05);
       transition: all $transition-ease;
+      
+      // Per le icone SVG delle categorie (non VALE)
+      &[src*="/assets/icons/"] {
+        filter: brightness(0) invert(1); // Rende le icone bianche
+        width: 60%; // Rende le icone più piccole 
+        height: 60%;
+        object-fit: contain; // Mantiene proporzioni
+      }
+      
+      // Per l'avatar di VALE mantieni il filtro originale
+      &[src*="/assets/avatars/"] {
+        filter: saturate(1.1) brightness(1.05);
+      }
     }
   }
 
@@ -569,9 +584,9 @@ body {
     box-shadow: $shadow-sm;
     
     svg {
-      width: 16px;
-      height: 16px;
-      color: $primary;
+      width: 12px;
+      height: 12px;
+      color: white;
       transition: all $transition-fast;
     }
     
@@ -825,8 +840,8 @@ body {
     }
 
     svg {
-      width: 32px;
-      height: 32px;
+      width: 20px;
+      height: 20px;
       color: $accent; // Icona bianca su sfondo blu
       z-index: 2;
       position: relative;

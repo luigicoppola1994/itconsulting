@@ -44,31 +44,31 @@ export class HomeComponent implements OnInit, OnDestroy {
     },
     { 
       name: 'CHI SIAMO', 
-      image: '/assets/avatars/mioavatar.png', 
+      image: '/assets/icons/info-circle.svg', 
       link: 'chi-siamo',
       color: '#10B981'
     },
     { 
       name: 'CONTATTI', 
-      image: '/assets/avatars/mioavatar.png', 
+      image: '/assets/icons/phone.svg', 
       link: 'contatti',
       color: '#F59E0B'
     },
     { 
       name: 'PRODOTTI', 
-      image: '/assets/avatars/mioavatar.png', 
+      image: '/assets/icons/package.svg', 
       link: 'prodotti',
       color: '#EF4444'
     },
     { 
       name: 'CONSULENZA', 
-      image: '/assets/avatars/mioavatar.png', 
+      image: '/assets/icons/briefcase.svg', 
       link: 'consulenza',
       color: '#8B5CF6'
     },
     { 
       name: 'FORMAZIONE', 
-      image: '/assets/avatars/mioavatar.png', 
+      image: '/assets/icons/graduation-cap.svg', 
       link: 'formazione',
       color: '#EC4899'
     }

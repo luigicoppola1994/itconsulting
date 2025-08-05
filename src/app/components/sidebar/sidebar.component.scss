@@ -381,9 +381,9 @@ $sidebar-width: 280px;
   justify-content: center;
   
   svg {
-    width: 16px;
-    height: 16px;
-    color: rgba(255, 255, 255, 0.8);
+    width: 12px;
+    height: 12px;
+    color: white;
     transition: all $transition-fast;
   }
 }
@@ -414,6 +414,14 @@ $sidebar-width: 280px;
     border-radius: 50%;
     transition: all $transition-fast;
     border: none;
+    
+    // Per le icone SVG delle categorie (non VALE)
+    &[src*="/assets/icons/"] {
+      filter: brightness(0) invert(1); // Rende le icone bianche
+      width: 60%; // Rende le icone più piccole
+      height: 60%;
+      object-fit: contain; // Mantiene proporzioni
+    }
   }
 
   svg {
