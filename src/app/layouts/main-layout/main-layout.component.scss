@@ -602,6 +602,24 @@ app-sidebar {
 }
 
 /* === RESPONSIVE === */
+@media (max-width: 992px) {
+  .main-layout-container {
+    .content-area {
+      padding: 0; // Rimuovi padding su mobile per larghezza completa
+      
+      &.content-shifted {
+        margin-left: 0; // Su mobile la sidebar si sovrappone
+        width: 100vw;
+      }
+    }
+  }
+  
+  // Nascondi la barra vocale del main-layout su mobile (la homepage ha la sua)
+  .voice-control-bar {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .main-layout-container {
     .content-area {

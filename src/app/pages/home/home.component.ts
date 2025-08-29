@@ -207,17 +207,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getVoiceControlText(): string {
-    switch (this.conversationState.visualState) {
-      case 'speaking': return 'STA PARLANDO';
-      case 'listening': return 'STA ASCOLTANDO';
-      case 'connecting': return 'CONNESSIONE...';
-      case 'processing': return 'ELABORANDO...';
-      case 'error': return 'ERRORE';
-      case 'idle': 
-        return this.conversationState.status === 'connected' ? 'CONNESSO' : 'CLICCA PER PARLARE';
-      default: 
-        return 'CLICCA PER PARLARE';
-    }
+    return 'CLICCA PER PARLARE';
   }
 
   getCurrentAgentName(): string {
@@ -382,5 +372,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else {
       this.conversationService.startConversation('vale');
     }
+  }
+
+  // TrackBy function per ottimizzare *ngFor su mobile
+  trackByAvatar(index: number, avatar: Avatar): string {
+    return avatar.name;
   }
 }

@@ -25,6 +25,7 @@
       <div class="avatars-grid-wrapper">
         <div class="avatars-pyramid">
           
+          <!-- LAYOUT DESKTOP - PIRAMIDE ORIGINALE -->
           <!-- PRIMA RIGA: 1 Avatar Centrale CON ILLUMINAZIONE -->
           <div class="pyramid-row-1">
             <div class="avatar-item"
@@ -147,6 +148,42 @@
                 <p class="avatar-name">{{ avatars[5].name }}</p>
               </div>
               
+            </div>
+          </div>
+
+          <!-- LAYOUT MOBILE - CARDS STILE GLOVO (generate via CSS) -->
+          <div class="mobile-cards-container">
+            <!-- Cards generate via Angular *ngFor con styling CSS mobile -->
+            <div class="avatar-item mobile-card"
+                 *ngFor="let avatar of avatars; trackBy: trackByAvatar"
+                 [class]="getAvatarClasses(avatar).join(' ')"
+                 [ngStyle]="getAvatarStyles(avatar)"
+                 role="button"
+                 tabindex="0"
+                 [attr.aria-label]="'Accedi a ' + avatar.name">
+              
+              <!-- Area principale di navigazione -->
+              <div class="avatar-main-area" (click)="onAvatarClick(avatar)">
+                <div class="avatar-glow"></div>
+                <div class="avatar-border">
+                  <img [src]="avatar.image" [alt]="avatar.name" class="avatar-image-fill">
+                </div>
+                <p class="avatar-name">{{ avatar.name }}</p>
+              </div>
+              
+              <!-- Pulsante vocale solo per VALE -->
+              <button *ngIf="avatar.name === 'VALE'" 
+                      class="voice-select-btn" 
+                      (click)="onAvatarVoiceSelect(avatar)"
+                      [class.active]="isAvatarSelectedForVoice(avatar)"
+                      [class.connected]="isAvatarConnected(avatar)"
+                      [class.speaking]="isAvatarSpeaking(avatar)"
+                      [attr.aria-label]="'Seleziona ' + avatar.name + ' per conversazione vocale'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2c-1.7 0-3 1.3-3 3v6c0 1.7 1.3 3 3 3s3-1.3 3-3V5c0-1.7-1.3-3-3-3zm0 14c-2.8 0-5-2.2-5-5H5c0 3.9 3.1 7 7 7s7-3.1 7-7h-2c0 2.8-2.2 5-5 5z"/>
+                  <rect x="11" y="19" width="2" height="3"/>
+                </svg>
+              </button>
             </div>
           </div>
 
