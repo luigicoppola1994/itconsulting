@@ -1,3 +1,5 @@
+@use "sass:color";
+
 /* --- Modern Web Design Color Palette (Complete) --- */
 // Base colors
 $primary: #456491;
@@ -835,7 +837,7 @@ body {
       box-shadow: 
         $shadow-lg,
         0 0 20px rgba($accent, 0.3); // Glow bianco
-      background: lighten($primary, 5%); // Sfondo leggermente più chiaro
+      background: color.adjust($primary, $lightness: 5%); // Sfondo leggermente più chiaro
       
       svg {
         transform: scale(1.1); // Icona più grande
@@ -1697,7 +1699,7 @@ body {
         box-shadow: 
           $shadow-lg,
           0 0 20px rgba($accent, 0.3);
-        background: lighten($primary, 5%);
+        background: color.adjust($primary, $lightness: 5%);
         
         svg {
           transform: scale(1.1);

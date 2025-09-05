@@ -1,15 +1,7 @@
 <div class="main-layout-container">
-<app-sidebar 
-  [isOpen]="showSidebar" 
-  [selectedItem]="selectedMenuItem"
-  [shouldAnimate]="shouldAnimateSidebar"
-  (closeSidebar)="showSidebar = false"
-  (backToHome)="onBackToHome()"
-  (toggleSidebar)="showSidebar = !showSidebar"
-  (voiceAction)="onSidebarVoiceAction($event)">
-</app-sidebar>
-
-  <div class="content-area" [class.content-shifted]="showSidebar">
+  <app-header></app-header>
+  
+  <div class="content-area">
     <router-outlet></router-outlet>
   </div>
 

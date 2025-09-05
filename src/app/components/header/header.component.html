@@ -1,0 +1,134 @@
+<header class="header" [class.scrolled]="isScrolled">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="header-logo">
+      <a routerLink="/" aria-label="Vai alla homepage di IT Consulting">
+        <img src="https://www.itconsultingsrl.it/wp-content/uploads/2020/09/itconsulting-sito-web-logo.svg"
+             alt="Logo IT Consulting"
+             class="company-logo">
+      </a>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="header-nav" role="navigation" aria-label="Menu di navigazione principale">
+      <div class="nav-container">
+        <div class="nav-menu">
+          <div class="nav-item">
+            <a routerLink="/" 
+               routerLinkActive="active" 
+               [routerLinkActiveOptions]="{exact: true}"
+               class="nav-link">
+              Home
+              <span class="dropdown-icon">▼</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a routerLink="/chi-siamo" 
+               routerLinkActive="active"
+               class="nav-link">
+              Chi Siamo
+              <span class="dropdown-icon">▼</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a routerLink="/vale" 
+               routerLinkActive="active"
+               class="nav-link">
+              VALE
+              <span class="dropdown-icon">▼</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a routerLink="/formazione" 
+               routerLinkActive="active"
+               class="nav-link">
+              Formazione
+              <span class="dropdown-icon">▼</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a routerLink="/prodotti" 
+               routerLinkActive="active"
+               class="nav-link no-dropdown">
+              Prodotti
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Action Buttons -->
+    <div class="header-actions">
+      <button class="btn-demo">Get a demo</button>
+      <button class="btn-signup">Sign up</button>
+    </div>
+
+    <!-- Mobile menu button -->
+    <button class="mobile-menu-button" 
+            (click)="toggleMobileMenu()"
+            [class.active]="isMobileMenuOpen"
+            aria-label="Toggle mobile menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav" 
+         [class.active]="isMobileMenuOpen"
+         role="navigation" 
+         aria-label="Menu di navigazione mobile">
+      <div class="mobile-menu">
+        <div class="mobile-nav-item">
+          <a routerLink="/" 
+             routerLinkActive="active" 
+             [routerLinkActiveOptions]="{exact: true}"
+             class="mobile-nav-link"
+             (click)="closeMobileMenu()">
+            Home
+          </a>
+        </div>
+        <div class="mobile-nav-item">
+          <a routerLink="/chi-siamo" 
+             routerLinkActive="active"
+             class="mobile-nav-link"
+             (click)="closeMobileMenu()">
+            Chi Siamo
+          </a>
+        </div>
+        <div class="mobile-nav-item">
+          <a routerLink="/vale" 
+             routerLinkActive="active"
+             class="mobile-nav-link"
+             (click)="closeMobileMenu()">
+            VALE
+          </a>
+        </div>
+        <div class="mobile-nav-item">
+          <a routerLink="/formazione" 
+             routerLinkActive="active"
+             class="mobile-nav-link"
+             (click)="closeMobileMenu()">
+            Formazione
+          </a>
+        </div>
+        <div class="mobile-nav-item">
+          <a routerLink="/prodotti" 
+             routerLinkActive="active"
+             class="mobile-nav-link"
+             (click)="closeMobileMenu()">
+            Prodotti
+          </a>
+        </div>
+        <div class="mobile-nav-item">
+          <a routerLink="/contatti" 
+             routerLinkActive="active"
+             class="mobile-nav-link"
+             (click)="closeMobileMenu()">
+            Contatti
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>

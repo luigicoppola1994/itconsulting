@@ -1,10 +1,23 @@
 /* === MAIN LAYOUT CORRETTO === */
 .main-layout-container {
   display: flex;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   background-color: #F8FAFC;
-  position: relative; // Aggiunto per il posizionamento corretto
+  position: relative;
+  padding-top: 104px; // Header space - initial state
+  transition: padding-top 0.3s ease;
+
+  :global(body.scrolled) & {
+    padding-top: 64px; // Header space - scrolled state
+  }
+
+  @media (max-width: 768px) {
+    padding-top: 96px;
+
+    :global(body.scrolled) & {
+      padding-top: 56px;
+    }
+  }
 
   // CONTENT AREA - Posizionamento corretto dopo sidebar
   .content-area {
@@ -17,6 +30,11 @@
     margin-left: 0; // Inizia senza margin
     padding-bottom: 120px; // Spazio per footer + voice bar
     background: #F8FAFC;
+    min-height: calc(100vh - 104px);
+
+    :global(body.scrolled) & {
+      min-height: calc(100vh - 64px);
+    }
     
     // QUANDO LA SIDEBAR È APERTA
     &.content-shifted {

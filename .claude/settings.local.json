@@ -14,7 +14,24 @@
       "Bash(npm run build:*)",
       "Bash(dir:*)",
       "Bash(ls:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\pages\\chi-siamo/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\pages\\chi-siamo/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\layouts\\main-layout/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\components\\sidebar/**)",
+      "Bash(ng generate:*)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\layouts\\main-layout/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\layouts\\main-layout/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\components\\header/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\components\\header/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\components\\header/**)",
+      "WebFetch(domain:www.langchain.com)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\layouts\\main-layout/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\layouts\\main-layout/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\pages\\chi-siamo/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\pages\\chi-siamo/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\pages\\chi-siamo/**)",
+      "Read(/C:\\Users\\Luigi Coppola\\itconsulting\\src\\app\\pages\\chi-siamo/**)"
     ],
     "deny": []
   }
